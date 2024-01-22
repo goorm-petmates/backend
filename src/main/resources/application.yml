@@ -1,0 +1,69 @@
+## 1. 서비스 환경 선택: 개발 / 테스트 서버 / 운영 서버
+spring:
+  profiles:
+    active:
+      - local
+#      - dev
+#      - prod
+
+  docker:
+    compose:
+      skip:
+        in-tests: false
+
+  ## 2. Database
+## 하이버네이트의 스키마 생성이 먼저 수행되고,
+## 그 후에 schema.sql이 추가적인 스키마 변경을 위해 실행되며, 마지막으로 data.sql이 데이터베이스를 채우기 위해 실행
+  jpa:
+    defer-datasource-initialization: true
+    hibernate:
+      naming:
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+        physical-strategy: kr.co.petmates.api.config.security.CamelCaseToUppercaseUnderscoresNamingStrategy
+
+### JPA/Hibernate 설정
+#### Dialect(방언) 설정
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+### formatted sql
+        format_sql: true
+
+## 3. 개발 / 테스트 서버 / 운영 서버의 공동 환경 설정
+### Charset Encoding
+#### Charset of HTTP requests and responses. Added to the "Content-Type" header if not set explicitly.
+server:
+  servlet:
+    encoding:
+      charset: utf-8
+  #### Enable http encoding support.
+      enabled: true
+  #### Force the encoding to the configured charset on HTTP requests and responses.
+      force: true
+### server port
+  port: 8080
+
+## Log4j2
+#logging:
+#  config: classpath:log4j2.properties
+
+#GZIP 압축
+  compression:
+    enabled: true
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+  #@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) 대체
+  test:
+    database:
+      replace: none
