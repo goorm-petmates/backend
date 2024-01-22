@@ -17,6 +17,10 @@ configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+//	all {
+//		// logback대신 Log4j2를 사용했을 때, 충돌을 방지
+//		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+//	}
 }
 
 repositories {
@@ -44,6 +48,22 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+
+//	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.12.3'
+//	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.12.3'
+//	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.12.3'
+//	Jwts.parserBuilder()에서 Cannot resolve method 'parserBuilder' in 'Jwts' 라고 나오는 이슈로 버전을 낮춤.
+	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
+	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'org.testcontainers:junit-jupiter'
+	testImplementation 'org.testcontainers:mysql'
+
+
 }
 
 tasks.named('test') {
@@ -56,3 +76,9 @@ hibernate {
 	}
 }
 
+// Jar 생성관련 설정
+bootJar{
+	archivesBaseName = 'petmates' // project name
+	archiveFileName = 'petmates-api-app.jar' // file name of Jar
+	archiveVersion = "0.0.1"
+}
