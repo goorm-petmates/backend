@@ -1,4 +1,4 @@
-package kr.co.petmates.api.bussiness.members;
+package kr.co.petmates.api.bussiness.members.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
