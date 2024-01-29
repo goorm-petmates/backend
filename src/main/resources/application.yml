@@ -52,6 +52,9 @@ server:
   compression:
     enabled: true
 
+springdoc:
+  show-login-endpoint: true
+
 ---
 
 spring:
