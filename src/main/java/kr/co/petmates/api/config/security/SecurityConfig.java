@@ -1,8 +1,5 @@
 package kr.co.petmates.api.config.security;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
-import java.util.Arrays;
 import kr.co.petmates.api.config.jwt.JwtAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,6 +17,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
@@ -61,6 +62,7 @@ public class SecurityConfig {
                                 .requestMatchers("/favicon.ico").permitAll() // favicon 접근 허용
                                 .requestMatchers(PathRequest.toH2Console()).permitAll()// favicon.ico 요청 인증 무시
                                 .requestMatchers("/api/members/test",
+                                        "/v3/**", "/swagger-ui/**",
                                         "/api/members/login").permitAll() // 접근 허용
                                 .requestMatchers("/api/members/my-info", "/api/members/add-image", "/api/members/delete",
                                         "/api/members/logout", "/adm/test",
