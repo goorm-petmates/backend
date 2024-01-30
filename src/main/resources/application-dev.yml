@@ -1,0 +1,70 @@
+spring:
+  datasource:
+    ## MySQL 데이터베이스 설정 (utf8mb4_unicode_ci 콜레이션 사용)
+    ### @SEE: https://chung-develop.tistory.com/143
+    #    url: ${DATABASE_URL}?allowPublicKeyRetrieval=true&useSSL=false
+#    url: jdbc:mysql://petmates-db.cb6yayuc0lax.ap-northeast-2.rds.amazonaws.com:3306/petmates?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia\Seoul&useLegacyDatetimeCode=false&characterEncoding=UTF-8&useUnicode=true&connectionCollation=utf8mb4_unicode_ci
+    url: jdbc:mysql://localhost:3306/petmates?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia\Seoul&useLegacyDatetimeCode=false&characterEncoding=UTF-8&useUnicode=true&connectionCollation=utf8mb4_unicode_ci
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: petuser
+    password: qhdks00!
+  jpa:
+    hibernate:
+      ddl-auto: update
+    #      ddl-auto: none @Todo: v1 출시 때부터, ddl-auto값을 none으로 적용하기
+    ## 로그 설정
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        ## 추가적인 주석 출력
+        use_sql_comments: true
+      default_batch_fetch_size: 100
+    open-in-view: false
+  ## SQL 초기화 스크립트 설정
+  sql:
+    init:
+      mode: always
+      platform: mysql
+      schema-locations: classpath:schema-dev.sql
+  ## file upload
+  servlet:
+    multipart:
+      location: /home/web/app/petmates/upload
+  docker:
+    compose:
+      enabled: true
+      profiles:
+        active: dev
+      file: docker–compose-dev.yaml
+  ## thymeleaf
+  ### cache off
+  thymeleaf:
+    cache: false
+
+## logging setting
+logging:
+  level:
+    '[com.example.kakao]': INFO
+    '[org.hibernate.type]': TRACE
+    #    '[org.springframework.security.web]': off
+    ### 쿼리 '?'부분 치환해서 보기
+    org:
+      hibernate:
+        type:
+          descriptor:
+            sql: trace
+
+  ## JWT Secret Key
+jwt:
+  header: Authorization
+  secret: tUkrml53kXvL0/H1wRZaeMnRN7BMx1TIfw3+dfC1MB1SJi0XfwN/DIsZzknYXOppgQsORkElJiueBPYKI71P4g==
+  ### ttl (초)
+  token-validity-in-seconds: 86400
+
+config:
+  activate:
+    on-profile: dev
+docker:
+  compose:
+    enabled: false
