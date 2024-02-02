@@ -4,7 +4,7 @@
     <property name="LOG_PATH" value="src/main/resources/logs/local" />
 
     <!-- 로그 패턴 -->
-    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} [%thread] %highlight(%-5level) %logger{36} - %msg%n" />
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) [%thread] %magenta(%logger) - %cyan(%msg%n)" />
 
     <!-- 콘솔 출력 설정 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -26,6 +26,7 @@
         </encoder>
     </appender>
 
+<!--    <logger name="kr.co.petmates.api.bussiness.oauth" level="DEBUG" />-->
     <!-- 루트 로거 설정 -->
 <!--    <root level="INFO">-->
     <root level="DEBUG">
