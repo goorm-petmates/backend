@@ -63,6 +63,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/kakao/**", "/api/oauth/**", "/api/members/test","/api/my-page/**",
                                         "/v3/**", "/swagger-ui/**",
                                         "/api/members/login").permitAll() // 접근 허용
+                                .requestMatchers("/api/kakao/login").permitAll() // /api/kakao/login에 대한 접근 허용
                                 .requestMatchers("/api/members/my-info", "/api/members/add-image", "/api/members/delete",
                                         "/api/members/logout", "/adm/test",
                                         "/api/ide/**", "/api/chat/**", "/chat/**").authenticated() // 로그인했을 때 접근 허용

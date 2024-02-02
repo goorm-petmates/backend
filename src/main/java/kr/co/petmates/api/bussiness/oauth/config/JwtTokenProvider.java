@@ -1,3 +1,5 @@
+// JWT (JSON Web Token) 토큰을 생성하고 검증
+
 package kr.co.petmates.api.bussiness.oauth.config;
 
 import io.jsonwebtoken.Claims;

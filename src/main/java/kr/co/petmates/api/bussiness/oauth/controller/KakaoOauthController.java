@@ -8,8 +8,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController // 이 클래스를 REST 컨트롤러로 선언합니다.
@@ -28,7 +28,8 @@ public class KakaoOauthController {
     //    return ResponseEntity.ok("{login : user}"); // 간단한 문자열을 응답으로 반환합니다.
 
     @PostMapping("/login") // "/login" 경로로 POST 요청이 오면 이 메소드를 실행합니다.
-    public ResponseEntity<?> kakaoLogin(@RequestBody String authorizationCode) { // 클라이언트로부터 받은 인가 코드를 매개변수로 받습니다.
+    public ResponseEntity<?> kakaoLogin(@RequestParam("code") String authorizationCode) {
+//    public ResponseEntity<?> kakaoLogin(@RequestBody String authorizationCode) { // 클라이언트로부터 받은 인가 코드를 매개변수로 받습니다.
         // 인가 코드를 사용하여 액세스 토큰을 요청합니다.
         String accessToken = kakaoOauthService.getAccessToken(authorizationCode);
         // 받은 액세스 토큰으로 JWT 토큰을 생성합니다.
@@ -45,12 +46,6 @@ public class KakaoOauthController {
         // ResponseEntity 객체를 생성하여 반환합니다. 이 객체는 설정한 헤더와 HTTP 상태 코드(여기서는 302 Found, 리다이렉션을 의미)를 함께 클라이언트에 전달합니다.
 
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
-
-
-        // 프론트엔드에 반환할 JWT 토큰과 사용자 정보를 Map에 담습니다.
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("jwtToken", jwtToken); // JWT 토큰을 Map에 추가합니다.
-//        response.put("userInfo", userInfo); // 사용자 정보를 Map에 추가합니다.
 
         // 생성된 JWT 토큰을 응답으로 반환합니다. (응답 구성을 개선할 필요가 있습니다)
 //        return ResponseEntity.ok(jwtToken);

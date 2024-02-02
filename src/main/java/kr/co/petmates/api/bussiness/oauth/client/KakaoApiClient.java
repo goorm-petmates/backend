@@ -2,21 +2,20 @@
 
 package kr.co.petmates.api.bussiness.oauth.client;
 
-import org.springframework.http.HttpHeaders;
 import java.util.HashMap;
 import java.util.Map;
-// 카카오 토큰 응답과 사용자 정보 응답을 처리하기 위한 DTO 클래스를 임포트합니다.
 import kr.co.petmates.api.bussiness.oauth.dto.KakaoTokenResponse;
 import kr.co.petmates.api.bussiness.oauth.dto.KakaoUserInfoResponse;
-// HTTP 통신에 필요한 스프링 클래스를 임포트합니다.
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-// 외부 설정값을 주입받기 위한 어노테이션을 임포트합니다.
-import org.springframework.beans.factory.annotation.Value;
 
 @Component
 public class KakaoApiClient {
@@ -42,6 +41,9 @@ public class KakaoApiClient {
     public KakaoApiClient() {
         // RestTemplate 객체를 초기화합니다.
         this.restTemplate = new RestTemplate();
+        // 'application/x-www-form-urlencoded' 콘텐츠 유형을 처리할 수 있는 HttpMessageConverter를 추가합니다.
+        this.restTemplate.getMessageConverters().add(new FormHttpMessageConverter());
+        this.restTemplate.getMessageConverters().add(new StringHttpMessageConverter());
     }
 
     // 인가 코드를 사용하여 액세스 토큰을 요청하는 메소드

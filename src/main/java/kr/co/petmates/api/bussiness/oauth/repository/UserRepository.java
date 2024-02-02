@@ -1,5 +1,5 @@
 // 사용자 정보를 데이터베이스에 저장하고 관리하기 위한 JPA 리포지토리입니다.
-
+//  User 엔티티와 관련된 데이터베이스 액세스 작업을 정의하는 Spring Data JPA 리포지토리 인터페이스입니다.
 package kr.co.petmates.api.bussiness.oauth.repository;
 
 import kr.co.petmates.api.bussiness.oauth.domain.User;

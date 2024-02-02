@@ -36,7 +36,15 @@ public class UserService {
         Optional<User> existingUser = userRepository.findByEmail(email);
 
         if (existingUser.isPresent()) {
-            // 이미 데이터베이스에 사용자가 존재한다면, JWT 토큰을 생성하고 반환합니다.
+            // 이미 데이터베이스에 사용자가 존재한다면, 사용자 정보 업데이트
+            User user = existingUser.get();
+            user.setName(nickname);
+            user.setProfileImage(profileImage);
+            // 기타 필요한 정보 업데이트
+
+            userRepository.save(user);
+
+            // JWT 토큰을 생성하고 반환합니다.
             return jwtTokenProvider.createToken(email, "ROLE_USER");
         } else {
             // 데이터베이스에 사용자가 존재하지 않는 경우, 새로운 사용자 정보를 생성하고 저장합니다.
