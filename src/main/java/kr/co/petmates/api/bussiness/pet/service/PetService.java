@@ -2,10 +2,8 @@ package kr.co.petmates.api.bussiness.pet.service;
 
 
 
-import static kr.co.petmates.api.bussiness.pet.dto.PetDto.toPetDto;
 import static kr.co.petmates.api.bussiness.pet.entity.Pet.toPetEntity;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 import kr.co.petmates.api.bussiness.members.entity.Members;
@@ -15,11 +13,9 @@ import kr.co.petmates.api.bussiness.pet.repository.PetRepository;
 import kr.co.petmates.api.enums.UserInterfaceMsg;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
