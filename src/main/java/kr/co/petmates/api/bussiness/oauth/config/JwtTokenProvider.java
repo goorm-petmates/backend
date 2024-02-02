@@ -34,6 +34,23 @@ public class JwtTokenProvider {
                 .compact(); // JWT를 문자열로 압축하고 반환합니다.
     }
 
+    // isNewUser 정보를 포함하는 JWT 토큰을 생성합니다.
+    public String createToken(String userPk, String role, boolean isNewUser) {
+        Claims claims = Jwts.claims().setSubject(userPk);
+        claims.put("roles", role);
+        claims.put("isNewUser", isNewUser); // 추가 정보 포함
+
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 1일
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(validity)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+    }
+
     // 전달받은 JWT 토큰이 유효한지 검증하는 메소드입니다.
     public boolean validateToken(String token) {
         try {
