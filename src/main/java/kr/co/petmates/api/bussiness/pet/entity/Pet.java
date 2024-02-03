@@ -62,6 +62,7 @@ public class Pet extends BaseDateTimeEntity implements Serializable {
     @Column(nullable = false)
     private boolean isDisease; // 질병
 
+    @Column
     private String ect; // 참고사항
 
     public static Pet toPetEntity(PetDto petDto) { // dto -> entity
@@ -75,10 +76,14 @@ public class Pet extends BaseDateTimeEntity implements Serializable {
         return pet;
     }
 
+    public Pet(Long id) {
+        this.id = id;
+    }
+
     // 펫과 주인 연결
     @Getter
     @ManyToOne
-    @JoinColumn(name = "membersId")
+    @JoinColumn(name = "members_id")
 
     private Members owner;
 
