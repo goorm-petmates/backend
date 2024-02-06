@@ -1,6 +1,7 @@
 package kr.co.petmates.api.common.fileupload;
 
 import kr.co.petmates.api.enums.UserInterfaceMsg;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,21 +18,27 @@ public class FileUploadService {
 
     private static final long MAX_FILE_SIZE = 1 * 1024 * 1024; // 1MB 제한
     private static final String[] ALLOWED_EXT = {"png", "jpg", "jpeg"}; // 허용된 파일 확장자
-    private final Path rootLocation = Paths.get("/home/web/app/petmates/upload"); // 파일 저장 위치
+
+    private final Path rootLocation;
+
+    @Autowired
+    public FileUploadService(FileStorageConfig fileStorageConfig) {
+        this.rootLocation = fileStorageConfig.getRootLocation();
+    }
 
     public String storeFile(MultipartFile file) {
         // 파일 유효성 검사
         validateFile(file);
 
         String extension = getExtension(file.getOriginalFilename());
-        String fileName = UUID.randomUUID() + "." + extension; // 고유한 파일 이름 생성
+        String storedFileName = UUID.randomUUID() + "." + extension; // 고유한 파일 이름 생성
 
         try {
             Files.createDirectories(this.rootLocation); // 디렉토리가 없으면 생성
-            Path destinationFile = this.rootLocation.resolve(fileName).normalize().toAbsolutePath();
+            Path destinationFile = this.rootLocation.resolve(Paths.get(storedFileName)).normalize().toAbsolutePath();
             file.transferTo(destinationFile); // 파일 저장
 
-            return fileName; // 저장된 파일 이름 반환
+            return storedFileName; // 저장된 파일 이름 반환
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, UserInterfaceMsg.ERR_UPLOAD_FAILED.getValue());
         }
@@ -57,7 +64,7 @@ public class FileUploadService {
         return false;
     }
 
-    private String getExtension(String fileName) {
-        return fileName.substring(fileName.lastIndexOf(".") + 1);
+    private String getExtension(String storedFileName) {
+        return storedFileName.substring(storedFileName.lastIndexOf(".") + 1);
     }
 }
