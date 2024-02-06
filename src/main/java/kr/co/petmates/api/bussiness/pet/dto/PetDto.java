@@ -16,6 +16,8 @@ import lombok.NoArgsConstructor;
 public class PetDto {
 
     private Long id; // 시퀀스
+    private Long membersId; // 멤버를 참조하기 위한 ID
+//    private Long petsitterId; // 펫시터를 참조하기 위한 ID
 
     @NotNull
     @Pattern(regexp = "^[가-힣_]{1,10}$")
@@ -54,8 +56,5 @@ public class PetDto {
 
         return petDto;
     }
-
-    // 파일 URL 필드
-    private String photoUrl;
 }
 
