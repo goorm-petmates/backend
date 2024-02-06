@@ -16,7 +16,7 @@ import java.util.UUID;
 @Service
 public class FileUploadService {
 
-    private static final long MAX_FILE_SIZE = 1 * 1024 * 1024; // 1MB 제한
+    private static final long MAX_FILE_SIZE = 1024 * 1024; // 1MB 제한
     private static final String[] ALLOWED_EXT = {"png", "jpg", "jpeg"}; // 허용된 파일 확장자
 
     private final Path rootLocation;
