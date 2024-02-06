@@ -2,9 +2,9 @@
 spring:
   profiles:
     active:
-      - local
+#      - local
 #      - dev
-#      - prod
+      - prod
 
   docker:
     compose:
@@ -51,6 +51,9 @@ server:
 #GZIP 압축
   compression:
     enabled: true
+
+springdoc:
+  show-login-endpoint: true
 
 ---
 

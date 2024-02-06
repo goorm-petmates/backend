@@ -36,10 +36,11 @@ out/
 ### VS Code ###
 .vscode/
 
-# 환경별 properties 파일 제외
-application-local.properties
-application-dev.properties
-application-prod.properties
+# 환경별 yml 파일 제외
+application-local.yml
+application-dev.yml
+application-prod.yml
+logs/
 
 docker–compose-dev.yaml
 docker–compose-local.yaml
