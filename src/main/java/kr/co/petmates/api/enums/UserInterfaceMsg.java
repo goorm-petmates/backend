@@ -21,8 +21,4 @@ public enum UserInterfaceMsg {
         this.value = value;
     }
 
-    public String getName() {
-        return name();
-    }
-
 }
