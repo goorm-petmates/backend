@@ -32,7 +32,7 @@ public class PetPhoto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(length = 500)
     private String storedFileName;
 
     @OneToOne(fetch = FetchType.LAZY)
