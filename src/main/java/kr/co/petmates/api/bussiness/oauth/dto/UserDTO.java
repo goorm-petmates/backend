@@ -3,7 +3,7 @@
 package kr.co.petmates.api.bussiness.oauth.dto;
 
 public class UserDTO {
-    private String account_email; // 카카오 계정 이메일
+    private String accountEmail; // 카카오 계정 이메일
     private String profile_nickname; // 닉네임
     private String profile_image; // 프로필 사진 URL
 
@@ -12,8 +12,8 @@ public class UserDTO {
     }
 
     // 생성자
-    public UserDTO(String account_email, String profile_nickname, String profile_image) {
-        this.account_email = account_email;
+    public UserDTO(String accountEmail, String profile_nickname, String profile_image) {
+        this.accountEmail = accountEmail;
         this.profile_nickname = profile_nickname;
         this.profile_image = profile_image;
     }
@@ -25,8 +25,8 @@ public class UserDTO {
      *
      * @return 카카오 계정 이메일
      */
-    public String getAccount_email() {
-        return account_email;
+    public String getAccountEmail() {
+        return accountEmail;
     }
 
     /**
@@ -52,10 +52,10 @@ public class UserDTO {
     /**
      * 카카오 계정 이메일을 설정합니다.
      *
-     * @param account_email 카카오 계정 이메일
+     * @param accountEmail 카카오 계정 이메일
      */
-    public void setAccount_email(String account_email) {
-        this.account_email = account_email;
+    public void setAccountEmail(String accountEmail) {
+        this.accountEmail = accountEmail;
     }
 
     /**

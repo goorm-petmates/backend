@@ -12,9 +12,18 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name; // 카카오에서 닉네임(profile_nickname)으로 제공받은 이름 저장
-    private String profileImage; // 카카오에서 프로필 사진(profile_image)으로 제공받은 URL 저장
-    private String email; // 카카오에서 카카오계정(account_email)으로 제공받은 이메일 저장
+    private String accountEmail; // 카카오에서 카카오계정(accountEmail)으로 제공받은 이메일 저장
+    private String nickname; // 카카오에서 닉네임(nickname)으로 제공받은 이름 저장
+    private String profile_image; // 카카오에서 프로필 사진(profile_image)으로 제공받은 URL 저장
+
+//    private String roles; // 사용자의 역할을 저장하는 필드
+//public String getRoles() {
+//    return roles;
+//}
+//
+//    public void setRoles(String roles) {
+//        this.roles = roles;
+//    }
 
     // 생성자
     public User() {
@@ -46,17 +55,17 @@ public class User {
      *
      * @return 사용자 이름
      */
-    public String getName() {
-        return name;
+    public String getNickname() {
+        return nickname;
     }
 
     /**
      * 사용자 이름을 설정합니다.
      *
-     * @param name 사용자 이름
+     * @param nickname 사용자 이름
      */
-    public void setName(String name) {
-        this.name = name;
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     /**
@@ -64,17 +73,17 @@ public class User {
      *
      * @return 사용자 프로필 사진 URL
      */
-    public String getProfileImage() {
-        return profileImage;
+    public String getProfile_image() {
+        return profile_image;
     }
 
     /**
      * 사용자 프로필 사진 URL을 설정합니다.
      *
-     * @param profileImage 사용자 프로필 사진 URL
+     * @param profile_image 사용자 프로필 사진 URL
      */
-    public void setProfileImage(String profileImage) {
-        this.profileImage = profileImage;
+    public void setProfile_image(String profile_image) {
+        this.profile_image = profile_image;
     }
 
     /**
@@ -82,16 +91,16 @@ public class User {
      *
      * @return 사용자 이메일
      */
-    public String getEmail() {
-        return email;
+    public String getAccountEmail() {
+        return accountEmail;
     }
 
     /**
      * 사용자 이메일을 설정합니다.
      *
-     * @param email 사용자 이메일
+     * @param accountEmail 사용자 이메일
      */
-    public void setEmail(String email) {
-        this.email = email;
+    public void setAccountEmail(String accountEmail) {
+        this.accountEmail = accountEmail;
     }
 }

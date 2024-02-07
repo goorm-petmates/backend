@@ -2,6 +2,8 @@
 package kr.co.petmates.api.bussiness.oauth.controller;
 
 import java.util.Map;
+import kr.co.petmates.api.bussiness.oauth.config.JwtTokenProvider;
+import kr.co.petmates.api.bussiness.oauth.dto.KakaoUserInfoResponse;
 import kr.co.petmates.api.bussiness.oauth.service.KakaoOauthService;
 import kr.co.petmates.api.bussiness.oauth.service.UserService;
 import org.slf4j.Logger;
@@ -20,43 +22,65 @@ import org.springframework.web.bind.annotation.RestController;
 public class KakaoOauthController {
 
     private static final Logger logger = LoggerFactory.getLogger(KakaoOauthController.class);
-
     @Autowired // 스프링의 의존성 주입 기능을 사용하여 KakaoOauthService 객체를 자동으로 주입합니다.
     private KakaoOauthService kakaoOauthService;
 
     @Autowired // UserService 객체를 자동으로 주입합니다.
     private UserService userService;
-
-    // @GetMapping("/login") // GET 방식의 "/login" 경로로 매핑되는 메소드입니다.
-    //    public ResponseEntity<?> kakaoLogin() { // 임시로 인가 코드 없이 호출할 수 있는 메소드입니다.
-    //    System.out.println("apple"); // 콘솔에 "apple"을 출력합니다.
-    //    return ResponseEntity.ok("{login : user}"); // 간단한 문자열을 응답으로 반환합니다.
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/login") // "/login" 경로로 POST 요청이 오면 이 메소드를 실행합니다.
-//    public ResponseEntity<?> kakaoLogin(@RequestParam("code") String code) {
-//    public ResponseEntity<?> kakaoLogin(@RequestBody String authorizationCode) { // 클라이언트로부터 받은 인가 코드를 매개변수로 받습니다.
     public ResponseEntity<?> kakaoLogin(@RequestBody Map<String, String> requestBody) {
         String code = requestBody.get("code");
-//        logger.info("abc " + code);
+        if (code == null) {
+            logger.error("인가코드 비어있음");
+            return ResponseEntity.badRequest().body("Authorization code is missing");
+        }
+        logger.info("인가코드: {}", code);
   // code = null 인 경우 체크,
     // 인가 코드를 사용하여 액세스 토큰을 요청합니다.
         String accessToken = kakaoOauthService.getAccessToken(code);
-        // 받은 액세스 토큰으로 JWT 토큰을 생성합니다.
-        String jwtToken = userService.createJwtToken(accessToken);
+//        logger.info("엑세스토큰: {}", accessToken);
+
         // 액세스 토큰을 사용하여 사용자 정보를 요청하고 결과를 가져옵니다.
-//        KakaoUserInfoResponse userInfo = kakaoOauthService.getUserInfo();
+        KakaoUserInfoResponse userInfo = kakaoOauthService.getUserInfo();
+        logger.info("컨테이너 사용자정보: {}", userInfo);
+
+        String accountEmail = userInfo.getAccountEmail(); // 사용자 이메일을 추출하여 변수에 저장
+        logger.info("컨테이너 계정 이메일: {}", accountEmail);
+
+        String jwtTokenTest = jwtTokenProvider.createJwtToken(accountEmail);
+        logger.info("컨테이너 jwt 토큰: {}", jwtTokenTest);
+
+
+        // UserService를 통해 사용자 인증 처리
+        UserService.AuthResult authResult = userService.createUserFromKakao(accessToken);
+
+        // AuthResult 객체에서 jwtToken과 isNewUser 값을 추출
+        String jwtToken = authResult.getToken();
+        boolean isNewUser = authResult.isNewUser();
+
+        // 로그로 jwtToken과 isNewUser 값을 출력
+        logger.info("JWT Token: {}", jwtToken);
+        logger.info("Is New User: {}", isNewUser);
+
+
+        // 받은 액세스 토큰으로 사용자 인증 및 JWT 토큰과 isNewUser 값을 가져옵니다.
+//        UserService.AuthResult authResult = userService.createUserFromKakao(accessToken);
+//        String jwtToken = authResult.getToken();
+//        boolean isNewUser = authResult.isNewUser();
+//        logger.info("jwtToken 값: ", jwtToken);
+//        logger.info("isNewUser 값: ", isNewUser);
 
         // 프론트엔드 URL에 JWT 토큰을 쿼리 파라미터로 추가하여 리다이렉트합니다.
-        String redirectUrl = "http://localhost:3000/oauth/token/kakao?jwtToken=" + jwtToken;
+        String redirectUrl = "http://localhost:3000/oauth/token/kakao?jwtToken=" + jwtToken + "&isNewUser=" + isNewUser;
         // HttpHeaders 객체를 생성합니다. 이 객체를 사용하여 HTTP 응답에 헤더를 추가할 수 있습니다.
         HttpHeaders headers = new HttpHeaders();
         // 'Location' 헤더에 리다이렉션할 URL을 추가합니다. 이 헤더는 클라이언트에게 새로운 위치로 이동하라는 지시를 담고 있습니다.
         headers.add("Location", redirectUrl);
+
         // ResponseEntity 객체를 생성하여 반환합니다. 이 객체는 설정한 헤더와 HTTP 상태 코드(여기서는 302 Found, 리다이렉션을 의미)를 함께 클라이언트에 전달합니다.
-
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
-
-        // 생성된 JWT 토큰을 응답으로 반환합니다. (응답 구성을 개선할 필요가 있습니다)
-//        return ResponseEntity.ok(jwtToken);
     }
 }

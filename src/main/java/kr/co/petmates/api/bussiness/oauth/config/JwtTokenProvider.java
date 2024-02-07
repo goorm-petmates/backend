@@ -6,59 +6,90 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import java.util.Date;
-import org.springframework.beans.factory.annotation.Value;
+import javax.crypto.SecretKey;
+import kr.co.petmates.api.bussiness.oauth.repository.UserRepository;
+import kr.co.petmates.api.bussiness.oauth.service.KakaoOauthService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component // 이 클래스를 스프링 빈으로 등록합니다.
 public class JwtTokenProvider {
 
-//    private String secretKey = "YOUR_SECRET_KEY"; // JWT 서명에 사용될 비밀 키입니다. 실제 서비스에서는 안전한 키를 사용해야 합니다.
-    @Value("${yourSecretKey}")
-    private String secretKey;
+    @Autowired // 스프링의 의존성 주입 기능을 사용하여 KakaoOauthService 객체를 자동으로 주입합니다.
+    private KakaoOauthService kakaoOauthService;
 
-    // 사용자 식별자와 역할을 기반으로 JWT 토큰을 생성하는 메소드입니다.
-    public String createToken(String userPk, String role) {
-        Claims claims = Jwts.claims().setSubject(userPk); // JWT 클레임을 생성하고, 사용자 식별자를 주제로 설정합니다.
-        claims.put("roles", role); // 사용자 역할 정보를 클레임에 추가합니다.
+    @Autowired
+    private UserRepository userRepository;
+    private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
-        Date now = new Date(); // 현재 시간을 생성합니다.
-        Date validity = new Date(now.getTime() + + 24 * 60 * 60 * 1000); // 토큰의 유효 시간 24시간 설정합니다.
+    //    private String secretKey = "YOUR_SECRET_KEY"; // JWT 서명에 사용될 비밀 키입니다. 실제 서비스에서는 안전한 키를 사용해야 합니다.
+//    @Value("${jwt.secret}")
+//    private String secretKey;
+    SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256); // 안전한 키 생성
 
-        // JWT 토큰을 생성하고 반환합니다.
-        return Jwts.builder()
-                .setClaims(claims) // 설정한 클레임을 JWT에 포함합니다.
-                .setIssuedAt(now) // 토큰의 발행 시간을 설정합니다.
-                .setExpiration(validity) // 토큰의 만료 시간을 설정합니다.
-                .signWith(SignatureAlgorithm.HS256, secretKey) // HS256 알고리즘과 비밀 키를 사용하여 JWT를 서명합니다.
-                .compact(); // JWT를 문자열로 압축하고 반환합니다.
-    }
-
-    // isNewUser 정보를 포함하는 JWT 토큰을 생성합니다.
-    public String createToken(String userPk, String role, boolean isNewUser) {
-        Claims claims = Jwts.claims().setSubject(userPk);
-        claims.put("roles", role);
-        claims.put("isNewUser", isNewUser); // 추가 정보 포함
+    public String createJwtToken(String accountEmail) {
+        logger.info("(jwtTokenProvider): 사용자 이메일={}", accountEmail);
 
         Date now = new Date();
-        Date validity = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 1일
+        Date validity = new Date(now.getTime() + 6 * 60 * 60 * 1000); // 6 hours
 
-        return Jwts.builder()
-                .setClaims(claims)
+        String token = Jwts.builder()
+                .setSubject(accountEmail)
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
+
+        logger.info("JWT 토큰 생성(jwtTokenProvider): token={}", token);
+
+        return token;
     }
+//
 
     // 전달받은 JWT 토큰이 유효한지 검증하는 메소드입니다.
     public boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token); // 비밀 키를 사용하여 토큰을 파싱하고 검증합니다. 
+            logger.info("JWT 토큰 유효성 체크: token={}", token);
             return true; // 토큰이 유효하면 true를 반환합니다.
         } catch (JwtException | IllegalArgumentException e) {
+            logger.error("JWT 토큰 유효하지 않음: token={}, error={}", token, e.getMessage());
             // 토큰이 유효하지 않거나 파싱 중 오류가 발생한 경우 처리합니다.
             return false; // 토큰이 유효하지 않으면 false를 반환합니다.
         }
     }
+
+    public String getUserPk(String token) {
+        // 토큰에서 클레임을 추출합니다.
+        Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+
+        // 'subject' 클레임에서 사용자 식별자를 반환합니다.
+        return claims.getSubject();
+    }
 }
+
+//
+//
+//    // isNewUser 정보를 포함하는 JWT 토큰을 생성합니다.
+//    public String createToken(String userPk, boolean isNewUser) {
+//        Claims claims = Jwts.claims().setSubject(userPk);
+//        claims.put("isNewUser", isNewUser); // 추가 정보 포함
+//
+//        Date now = new Date();
+//        Date validity = new Date(now.getTime() + 6 * 60 * 60 * 1000); // 6 hours
+//
+//        String token = Jwts.builder()
+//                .setClaims(claims)
+//                .setIssuedAt(now)
+//                .setExpiration(validity)
+//                .signWith(SignatureAlgorithm.HS256, secretKey)
+//                .compact();
+//
+//        logger.info("JWT 토큰 생성: userPk={}, isNewUser={}, token={}", userPk, isNewUser, token);
+//
+//        return token;
+//    }

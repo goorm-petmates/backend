@@ -68,7 +68,7 @@ public class SecurityConfig {
                                         "/api/members/logout", "/adm/test",
                                         "/api/ide/**", "/api/chat/**", "/chat/**").authenticated() // 로그인했을 때 접근 허용
                                 .requestMatchers(PathRequest.toH2Console()).permitAll() // H2 콘솔접근 허용
-                                .anyRequest().authenticated() // 그 외 요청은 인증 필요
+//                                .anyRequest().authenticated() // 그 외 요청은 인증 필요
                 )
 //                .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class) // JwtFilter 추가
                 // 'apply(C)' is deprecated since version 6.2 and marked for removal
