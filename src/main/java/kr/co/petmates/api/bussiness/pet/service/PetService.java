@@ -21,7 +21,7 @@ public class PetService {
 
 
     // 펫 정보 등록
-    public ResponseEntity<?> add(PetDto petDto, Members members, BindingResult bindingResult) {
+    public ResponseEntity<?> add(PetDto petDto, BindingResult bindingResult) {
 
         // 유효성 검사 실패 처리
         if (bindingResult.hasErrors()) {
@@ -29,7 +29,6 @@ public class PetService {
         }
 
         Pet pet = toPetEntity(petDto); // PetDto를 Pet 엔티티로 변환
-        pet.setOwner(members); // 사용자 정보와 Pet 엔티티 연결
 
         petRepository.save(pet);
         return ResponseEntity.ok().build(); // 성공적인 저장

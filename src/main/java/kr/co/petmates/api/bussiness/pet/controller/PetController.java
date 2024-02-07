@@ -25,15 +25,11 @@ public class PetController {
     private final PetService petService;
 
     // 펫 정보 입력 및 유효성 검증
-    @PostMapping("pet/add")
-    @PreAuthorize("isAuthenticated()") // 인증된 사용자만 접근 가능
-    public ResponseEntity<?> add(@Valid @RequestBody PetDto petDto, BindingResult bindingResult,
-                                 Authentication authentication) {
-        // Authentication 객체에서 사용자 정보 추출
-        Members members = (Members) authentication.getPrincipal();
+    @PostMapping("/pet/add")
+    public ResponseEntity<?> add(@Valid @RequestBody PetDto petDto, BindingResult bindingResult) {
 
-        // petDto와 사용자 정보를 Service로 전달
-        return petService.add(petDto, members, bindingResult);
+        // petDto를 Service로 전달
+        return petService.add(petDto, bindingResult);
     }
 
     // 펫 정보 조회
