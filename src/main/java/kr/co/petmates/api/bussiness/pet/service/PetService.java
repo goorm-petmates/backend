@@ -1,9 +1,6 @@
 package kr.co.petmates.api.bussiness.pet.service;
 
-
-
 import static kr.co.petmates.api.bussiness.pet.entity.Pet.toPetEntity;
-
 import java.util.HashMap;
 import java.util.Map;
 import kr.co.petmates.api.bussiness.members.entity.Members;
@@ -55,6 +52,18 @@ public class PetService {
         }
         errorResponse.put("errors", fieldErrors);
         return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    // 펫 정보 및 사진 조회
+    public PetDto findPetById(Long petId) {
+        return petRepository.findById(petId).map(pet -> {
+            PetDto petDto = PetDto.toPetDto(pet);
+            if (pet.getPetPhoto() != null) {
+                String photoUrl = "/uploads/" + pet.getPetPhoto().getStoredFileName();
+                petDto.setPhotoUrl(photoUrl);
+            }
+            return petDto;
+        }).orElseThrow(() -> new RuntimeException(UserInterfaceMsg.ERR_NOT_EXIST_PET.getValue()));
     }
 }
 

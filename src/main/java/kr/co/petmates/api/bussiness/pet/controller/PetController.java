@@ -16,19 +16,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
 
 @RestController
-@RequestMapping("/api/my-page/pet")
+@RequestMapping("/api/my-page")
 @RequiredArgsConstructor
 public class PetController {
     private final PetService petService;
 
     // 펫 정보 입력 및 유효성 검증
-    @PostMapping("/add")
+    @PostMapping("pet/add")
     @PreAuthorize("isAuthenticated()") // 인증된 사용자만 접근 가능
     public ResponseEntity<?> add(@Valid @RequestBody PetDto petDto, BindingResult bindingResult,
                                  Authentication authentication) {
@@ -37,5 +34,16 @@ public class PetController {
 
         // petDto와 사용자 정보를 Service로 전달
         return petService.add(petDto, members, bindingResult);
+    }
+
+    // 펫 정보 조회
+    @GetMapping("/petsitter/{petId}")
+    public ResponseEntity<?> getPet(@PathVariable("petId") Long petId) {
+        try {
+            PetDto petDto = petService.findPetById(petId);
+            return ResponseEntity.ok(petDto);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
