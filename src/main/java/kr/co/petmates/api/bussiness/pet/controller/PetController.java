@@ -2,14 +2,10 @@ package kr.co.petmates.api.bussiness.pet.controller;
 
 
 import jakarta.validation.Valid;
-import kr.co.petmates.api.bussiness.members.entity.Members;
 import kr.co.petmates.api.bussiness.pet.dto.PetDto;
 import kr.co.petmates.api.bussiness.pet.service.PetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

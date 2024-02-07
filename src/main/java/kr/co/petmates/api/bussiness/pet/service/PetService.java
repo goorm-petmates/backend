@@ -3,7 +3,6 @@ package kr.co.petmates.api.bussiness.pet.service;
 import static kr.co.petmates.api.bussiness.pet.entity.Pet.toPetEntity;
 import java.util.HashMap;
 import java.util.Map;
-import kr.co.petmates.api.bussiness.members.entity.Members;
 import kr.co.petmates.api.bussiness.pet.dto.PetDto;
 import kr.co.petmates.api.bussiness.pet.entity.Pet;
 import kr.co.petmates.api.bussiness.pet.repository.PetRepository;
