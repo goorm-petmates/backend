@@ -2,9 +2,9 @@
 spring:
   profiles:
     active:
-#      - local
+      - local
 #      - dev
-      - prod
+#      - prod
 
   docker:
     compose:
