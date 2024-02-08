@@ -9,7 +9,6 @@ import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
@@ -30,7 +29,7 @@ import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
-@Table(name = "booking")
+@Table(name = "BOOKING")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -43,9 +42,6 @@ public class Booking extends BaseDateTimeEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "create_at", nullable = false)
-    private LocalDateTime createAt; // 등록일시
 
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate; // 시작 날짜
@@ -68,7 +64,6 @@ public class Booking extends BaseDateTimeEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BookingStatus status = BookingStatus.BOOK_PREPARED; // 기본값 = BOOK_PREPARED
-
 
     @ManyToOne
     @JoinColumn(name = "members_id", nullable = false)
