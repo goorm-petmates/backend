@@ -10,6 +10,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import kr.co.petmates.api.bussiness.members.entity.Members;
+import kr.co.petmates.api.bussiness.petsitter.post.entity.Post;
 import kr.co.petmates.api.bussiness.review.dto.ReviewDto;
 import kr.co.petmates.api.common.entity.BaseDateTimeEntity;
 import lombok.AllArgsConstructor;
@@ -51,22 +52,20 @@ public class Review extends BaseDateTimeEntity implements Serializable {
         return review;
     }
     // 등록자와 연결
-//    @Getter
-//    @ManyToOne
-//    @JoinColumn(name = "membersId")
-//
-//    private Members members;
-//    public void setMembers(Members members) {
-//        this.members = members;
-//    }
+    @Getter
+    @ManyToOne
+    @JoinColumn(name = "membersId")
+    private Members members;
+    public void setMembers(Members members) {
+        this.members = members;
+    }
 
-//    // 펫시터와 연결 (펫시터 엔티티 생성 후..)
-//    @Getter
-//    @ManyToOne
-//    @JoinColumn(name = "petsitterId")
-
-//    private Petsitter petsitter;
-//    public void setPetsitter(Petsitter petsitter) {
-//        this.petsitter = petsitter;
-//    }
+    // 펫시터와 연결 (펫시터 엔티티 생성 후..)
+    @Getter
+    @ManyToOne
+    @JoinColumn(name = "petsitter")
+    private Post post;
+    public void setPost(Post post) {
+        this.post = post;
+    }
 }
