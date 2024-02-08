@@ -39,36 +39,29 @@ public class UserService {
         KakaoUserInfoResponse kakaoUserInfo = kakaoApiClient.getUserInfo(accessToken);
         logger.info("userService 사용자정보: {}", kakaoUserInfo);
 
-        // User 객체를 생성하고, 카카오 API 응답에서 받은 정보를 사용하여 초기화합니다.
-//        User user = new User();
-//        user.setNickname(kakaoUserInfo.getNickname()); // 사용자의 닉네임을 설정합니다.
-//        user.setProfile_image(kakaoUserInfo.getProfile_image()); // 사용자의 프로필 이미지 URL을 설정합니다.
-//        user.setAccountEmail(kakaoUserInfo.getAccountEmail()); // 사용자의 이메일을 설정합니다.
-//
-//        // UserRepository를 통해 User 객체를 데이터베이스에 저장합니다.
-//        return userRepository.save(user);
-
-// 사용자 정보를 데이터베이스에서 찾습니다.
-//        Optional<User> existingUser = userRepository.findByEmail(accountEmail);
-//        boolean isNewUser = !existingUser.isPresent(); // 신규회원 true, 기존회원이면 false
-//        boolean isNewUser = !userRepository.findByEmail(accountEmail).isPresent();
-        String accountEmail = kakaoUserInfo.getAccountEmail(); // 프로필에서 이메일 정보 추출
+        String email = kakaoUserInfo.getEmail(); // 프로필에서 이메일 정보 추출
+        logger.info("userService email값: {}", email);
+        String nickname = kakaoUserInfo.getNickname(); // 프로필에서 이메일 정보 추출
+        logger.info("userService nickname값: {}", nickname);
 
         // isNewUser 값 반환, 이메일로 데이터베이스 조회
-        boolean isNewUser = userCheckService.isNewUser(accountEmail);
+        boolean isNewUser = userCheckService.isNewUser(email);
         logger.info("userService isNewUser값: {}", isNewUser);
 
         // 데이터베이스에 사용자 정보 저장 또는 업데이트
-        User user = userRepository.findByAccountEmail(accountEmail)
+        User user = userRepository.findByEmail(email)
                 .orElseGet(() -> new User()); // 기존 사용자가 없을 경우 새 User 객체 생성
-        user.setAccountEmail(accountEmail); // 사용자의 이메일을 설정합니다.
+        user.setEmail(email); // 사용자의 이메일을 설정합니다.
+        logger.info("userService 이메일: {}", email);
         user.setNickname(kakaoUserInfo.getNickname()); // 사용자의 닉네임을 설정합니다.
-        user.setProfile_image(kakaoUserInfo.getProfile_image()); // 사용자의 프로필 이미지 URL을 설정합니다.
+        logger.info("userService 닉네임: {}", kakaoUserInfo.getNickname());
+        user.setProfileImage(kakaoUserInfo.getProfileImage()); // 사용자의 프로필 이미지 URL을 설정합니다.
+        logger.info("userService 이메일: {}", kakaoUserInfo.getProfileImage());
 
         // UserCheckService를 사용하여 사용자 저장 또는 업데이트
         userCheckService.saveOrUpdateUser(user);
 
-        String jwtToken = jwtTokenProvider.createJwtToken(accountEmail);
+        String jwtToken = jwtTokenProvider.createJwtToken(email);
         logger.info("userService jwtToken값: {}", jwtToken);
         return new AuthResult(jwtToken, isNewUser);
     }
@@ -94,6 +87,22 @@ public class UserService {
     }
 }
 
+
+
+
+// User 객체를 생성하고, 카카오 API 응답에서 받은 정보를 사용하여 초기화합니다.
+//        User user = new User();
+//        user.setNickname(kakaoUserInfo.getNickname()); // 사용자의 닉네임을 설정합니다.
+//        user.setProfileImage(kakaoUserInfo.getProfileImage()); // 사용자의 프로필 이미지 URL을 설정합니다.
+//        user.setAccountEmail(kakaoUserInfo.getAccountEmail()); // 사용자의 이메일을 설정합니다.
+//
+//        // UserRepository를 통해 User 객체를 데이터베이스에 저장합니다.
+//        return userRepository.save(user);
+
+// 사용자 정보를 데이터베이스에서 찾습니다.
+//        Optional<User> existingUser = userRepository.findByEmail(accountEmail);
+//        boolean isNewUser = !existingUser.isPresent(); // 신규회원 true, 기존회원이면 false
+//        boolean isNewUser = !userRepository.findByEmail(accountEmail).isPresent();
 
 
 //    public AuthResult authenticateUserFromKakao(String accessToken) {
@@ -148,7 +157,7 @@ public class UserService {
 //        // 카카오 사용자 정보에서 필요한 정보 추출
 //        String account_email = userInfo.getAccount_email();
 //        String nickname = userInfo.getNickname();
-//        String profileImage = userInfo.getProfile_image();
+//        String profileImage = userInfo.getProfileImage();
 //
 //        // 사용자 정보를 데이터베이스에서 찾습니다.
 //        Optional<User> existingUser = userRepository.findByEmail(account_email);
@@ -159,13 +168,13 @@ public class UserService {
 //        if (existingUser.isPresent()) {
 //            user = existingUser.get();
 //            user.setName(userInfo.getNickname());
-//            user.setProfileImage(userInfo.getProfile_image());
+//            user.setProfileImage(userInfo.getProfileImage());
 //        } else {
 //            // 신규 회원 정보 저장, 추가 필요한 정보 설정
 //            user = new User();
 //            user.setEmail(account_email);
 //            user.setName(userInfo.getNickname());
-//            user.setProfileImage(userInfo.getProfile_image());
+//            user.setProfileImage(userInfo.getProfileImage());
 //            isNewUser = true;
 //        }
 //        userRepository.save(user);

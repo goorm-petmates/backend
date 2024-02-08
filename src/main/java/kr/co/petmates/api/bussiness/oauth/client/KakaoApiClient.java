@@ -57,11 +57,34 @@ public class KakaoApiClient {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
         ResponseEntity<KakaoTokenResponse> response = restTemplate.exchange(kakaoTokenEndpoint, HttpMethod.POST, request, KakaoTokenResponse.class);
 
+        logger.info("kakaoApiClient 카카오 요청해서 생성한 엑세스토큰: {}", response.getBody());
         return response.getBody();
     }
 
     // 엑세스토큰으로 사용자정보 요청하기
     public KakaoUserInfoResponse getUserInfo(String accessToken) {
+        RestTemplate restTemplate = new RestTemplate();
+        // 헤더 설정
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + accessToken);
+
+        // HttpEntity에 헤더만 설정 (body는 null)
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        // GET 요청 보내기
+        ResponseEntity<KakaoUserInfoResponse> response = restTemplate.exchange(
+                kakaoUserInfoEndpoint,
+                HttpMethod.GET,
+                entity,
+                KakaoUserInfoResponse.class
+        );
+
+        KakaoUserInfoResponse userInfo = response.getBody();
+
+        logger.info("kakaoApiClient 사용자정보: {}", userInfo);
+        return userInfo;
+
+
         // 방안1
 //        HttpHeaders headers = new HttpHeaders();
 //        headers.set("Authorization", "Bearer " + accessToken);
@@ -96,24 +119,5 @@ public class KakaoApiClient {
 //
 //        logger.info("사용자정보: ", response);
 //        return response;
-
-        RestTemplate restTemplate = new RestTemplate();
-        // 헤더 설정
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + accessToken);
-
-        // HttpEntity에 헤더만 설정 (body는 null)
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        // GET 요청 보내기
-        ResponseEntity<KakaoUserInfoResponse> response = restTemplate.exchange(
-                kakaoUserInfoEndpoint,
-                HttpMethod.GET,
-                entity,
-                KakaoUserInfoResponse.class
-        );
-
-        logger.info("kakaoApiClient 사용자정보: {}", response.getBody());
-        return response.getBody();
     }
 }

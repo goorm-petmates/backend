@@ -31,14 +31,14 @@ public class JwtTokenProvider {
 //    private String secretKey;
     SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256); // 안전한 키 생성
 
-    public String createJwtToken(String accountEmail) {
-        logger.info("(jwtTokenProvider): 사용자 이메일={}", accountEmail);
+    public String createJwtToken(String email) {
+        logger.info("(jwtTokenProvider): 사용자 이메일={}", email);
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + 6 * 60 * 60 * 1000); // 6 hours
 
         String token = Jwts.builder()
-                .setSubject(accountEmail)
+                .setSubject(email)
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)

@@ -22,13 +22,13 @@ public class TokenRefreshService {
         }
 
         // 리프레시 토큰으로부터 사용자의 이메일(또는 사용자 식별자)을 추출합니다.
-        String accountEmail = jwtTokenProvider.getUserPk(refreshToken);
+        String email = jwtTokenProvider.getUserPk(refreshToken);
 
         // 추출한 이메일을 사용하여 데이터베이스에서 사용자를 조회합니다.
-        User user = userRepository.findByAccountEmail(accountEmail)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found")); // 사용자를 찾지 못하면 예외를 던집니다.
 
         // 새로운 액세스 토큰을 생성하여 반환합니다.
-        return jwtTokenProvider.createJwtToken(accountEmail);
+        return jwtTokenProvider.createJwtToken(email);
     }
 }

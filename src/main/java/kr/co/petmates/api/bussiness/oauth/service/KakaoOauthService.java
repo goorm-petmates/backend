@@ -29,7 +29,10 @@ public class KakaoOauthService {
         // 액세스 토큰을 TokenStorage에 저장
         tokenStorage.setAccessToken(accessToken);
 
-        logger.info("KakaoOauthService 저장된 엑세스토큰: {}", tokenStorage.getAccessToken());
+        String storageAccessToken = tokenStorage.getAccessToken();
+        logger.info("KakaoOauthService 생성후 저장된 엑세스토큰 tokenStorage.getAccessToken: {}", storageAccessToken);
+
+        logger.info("KakaoOauthService 카카오api 통해 생선한 엑세스토큰, 반환값: {}", accessToken);
         return accessToken;
     }
 
@@ -37,6 +40,7 @@ public class KakaoOauthService {
     public KakaoUserInfoResponse getUserInfo() {
         // TokenStorage에서 액세스 토큰 가져오기
         String accessToken = tokenStorage.getAccessToken();
+        logger.info("KakaoOauthService 저장된 엑세스토큰 가져오기: {}", accessToken);
 
         KakaoUserInfoResponse userInfo = kakaoApiClient.getUserInfo(accessToken);
 

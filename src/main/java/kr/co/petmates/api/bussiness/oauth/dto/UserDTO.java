@@ -3,19 +3,19 @@
 package kr.co.petmates.api.bussiness.oauth.dto;
 
 public class UserDTO {
-    private String accountEmail; // 카카오 계정 이메일
-    private String profile_nickname; // 닉네임
-    private String profile_image; // 프로필 사진 URL
+    private String email; // 카카오 계정 이메일
+    private String nickname; // 닉네임
+    private String profileImage; // 프로필 사진 URL
 
     // 기본 생성자
     public UserDTO() {
     }
 
     // 생성자
-    public UserDTO(String accountEmail, String profile_nickname, String profile_image) {
-        this.accountEmail = accountEmail;
-        this.profile_nickname = profile_nickname;
-        this.profile_image = profile_image;
+    public UserDTO(String email, String nickname, String profileImage) {
+        this.email = email;
+        this.nickname = nickname;
+        this.profileImage = profileImage;
     }
 
     // Getters
@@ -25,8 +25,8 @@ public class UserDTO {
      *
      * @return 카카오 계정 이메일
      */
-    public String getAccountEmail() {
-        return accountEmail;
+    public String getEmail() {
+        return email;
     }
 
     /**
@@ -34,8 +34,8 @@ public class UserDTO {
      *
      * @return 사용자 닉네임
      */
-    public String getProfile_nickname() {
-        return profile_nickname;
+    public String getNickname() {
+        return nickname;
     }
 
     /**
@@ -43,8 +43,8 @@ public class UserDTO {
      *
      * @return 사용자 프로필 사진 URL
      */
-    public String getProfile_image() {
-        return profile_image;
+    public String getProfileImage() {
+        return profileImage;
     }
 
     // Setters
@@ -52,27 +52,27 @@ public class UserDTO {
     /**
      * 카카오 계정 이메일을 설정합니다.
      *
-     * @param accountEmail 카카오 계정 이메일
+     * @param email 카카오 계정 이메일
      */
-    public void setAccountEmail(String accountEmail) {
-        this.accountEmail = accountEmail;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     /**
      * 사용자 닉네임을 설정합니다.
      *
-     * @param profile_nickname 사용자 닉네임
+     * @param nickname 사용자 닉네임
      */
-    public void setProfile_nickname(String profile_nickname) {
-        this.profile_nickname = profile_nickname;
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     /**
      * 사용자 프로필 사진 URL을 설정합니다.
      *
-     * @param profile_image 사용자 프로필 사진 URL
+     * @param profileImage 사용자 프로필 사진 URL
      */
-    public void setProfile_image(String profile_image) {
-        this.profile_image = profile_image;
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
 }

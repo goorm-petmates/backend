@@ -12,9 +12,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String accountEmail; // 카카오에서 카카오계정(accountEmail)으로 제공받은 이메일 저장
+    private String email; // 카카오에서 카카오계정(email)으로 제공받은 이메일 저장
     private String nickname; // 카카오에서 닉네임(nickname)으로 제공받은 이름 저장
-    private String profile_image; // 카카오에서 프로필 사진(profile_image)으로 제공받은 URL 저장
+    private String profileImage; // 카카오에서 프로필 사진(profileImage)으로 제공받은 URL 저장
 
 //    private String roles; // 사용자의 역할을 저장하는 필드
 //public String getRoles() {
@@ -73,17 +73,17 @@ public class User {
      *
      * @return 사용자 프로필 사진 URL
      */
-    public String getProfile_image() {
-        return profile_image;
+    public String getProfileImage() {
+        return profileImage;
     }
 
     /**
      * 사용자 프로필 사진 URL을 설정합니다.
      *
-     * @param profile_image 사용자 프로필 사진 URL
+     * @param profileImage 사용자 프로필 사진 URL
      */
-    public void setProfile_image(String profile_image) {
-        this.profile_image = profile_image;
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
 
     /**
@@ -91,16 +91,16 @@ public class User {
      *
      * @return 사용자 이메일
      */
-    public String getAccountEmail() {
-        return accountEmail;
+    public String getEmail() {
+        return email;
     }
 
     /**
      * 사용자 이메일을 설정합니다.
      *
-     * @param accountEmail 사용자 이메일
+     * @param email 사용자 이메일
      */
-    public void setAccountEmail(String accountEmail) {
-        this.accountEmail = accountEmail;
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

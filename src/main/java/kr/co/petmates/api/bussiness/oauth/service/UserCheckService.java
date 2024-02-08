@@ -11,8 +11,8 @@ public class UserCheckService {
     private UserRepository userRepository;
 
     // isNewUser 값 반환, 이메일로 데이터베이스 조회
-    public boolean isNewUser(String accountEmail) {
-        return !userRepository.findByAccountEmail(accountEmail).isPresent();
+    public boolean isNewUser(String email) {
+        return !userRepository.findByEmail(email).isPresent();
     }
 
     public void saveOrUpdateUser(User user) {

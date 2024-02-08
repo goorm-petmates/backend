@@ -41,16 +41,16 @@ public class KakaoOauthController {
   // code = null 인 경우 체크,
     // 인가 코드를 사용하여 액세스 토큰을 요청합니다.
         String accessToken = kakaoOauthService.getAccessToken(code);
-//        logger.info("엑세스토큰: {}", accessToken);
+        logger.info("컨테이너 새로 생성된 엑세스토큰: {}", accessToken);
 
         // 액세스 토큰을 사용하여 사용자 정보를 요청하고 결과를 가져옵니다.
         KakaoUserInfoResponse userInfo = kakaoOauthService.getUserInfo();
         logger.info("컨테이너 사용자정보: {}", userInfo);
 
-        String accountEmail = userInfo.getAccountEmail(); // 사용자 이메일을 추출하여 변수에 저장
-        logger.info("컨테이너 계정 이메일: {}", accountEmail);
+        String email = userInfo.getEmail(); // 사용자 이메일을 추출하여 변수에 저장
+        logger.info("컨테이너 계정 이메일: {}", email);
 
-        String jwtTokenTest = jwtTokenProvider.createJwtToken(accountEmail);
+        String jwtTokenTest = jwtTokenProvider.createJwtToken(email);
         logger.info("컨테이너 jwt 토큰: {}", jwtTokenTest);
 
 
@@ -62,8 +62,8 @@ public class KakaoOauthController {
         boolean isNewUser = authResult.isNewUser();
 
         // 로그로 jwtToken과 isNewUser 값을 출력
-        logger.info("JWT Token: {}", jwtToken);
-        logger.info("Is New User: {}", isNewUser);
+        logger.info("컨테이너 JWT Token: {}", jwtToken);
+        logger.info("컨테이너 IsNewUser: {}", isNewUser);
 
 
         // 받은 액세스 토큰으로 사용자 인증 및 JWT 토큰과 isNewUser 값을 가져옵니다.
@@ -74,13 +74,18 @@ public class KakaoOauthController {
 //        logger.info("isNewUser 값: ", isNewUser);
 
         // 프론트엔드 URL에 JWT 토큰을 쿼리 파라미터로 추가하여 리다이렉트합니다.
-        String redirectUrl = "http://localhost:3000/oauth/token/kakao?jwtToken=" + jwtToken + "&isNewUser=" + isNewUser;
+        String redirectUrl = "http://localhost:3000/oauth/redirect/token?jwtToken=" + jwtToken + "&isNewUser=" + isNewUser;
+        logger.info("컨테이너 redirectUrl: {}", redirectUrl);
         // HttpHeaders 객체를 생성합니다. 이 객체를 사용하여 HTTP 응답에 헤더를 추가할 수 있습니다.
         HttpHeaders headers = new HttpHeaders();
         // 'Location' 헤더에 리다이렉션할 URL을 추가합니다. 이 헤더는 클라이언트에게 새로운 위치로 이동하라는 지시를 담고 있습니다.
         headers.add("Location", redirectUrl);
-
+        // ResponseEntity 객체를 생성하여 변수에 할당합니다. 이 객체는 설정한 헤더와 HTTP 상태 코드(여기서는 302 Found, 리다이렉션을 의미)를 함께 클라이언트에 전달합니다.
+        ResponseEntity<Object> responseEntity = new ResponseEntity<>(headers, HttpStatus.FOUND);
+        logger.info("컨테이너 return: {}", responseEntity);
+// 생성한 ResponseEntity 객체를 반환합니다.
+        return responseEntity;
         // ResponseEntity 객체를 생성하여 반환합니다. 이 객체는 설정한 헤더와 HTTP 상태 코드(여기서는 302 Found, 리다이렉션을 의미)를 함께 클라이언트에 전달합니다.
-        return new ResponseEntity<>(headers, HttpStatus.FOUND);
+//        return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 }
