@@ -28,7 +28,7 @@ public class BookingController {
             @RequestParam(value = "page", defaultValue = "0") int page, // 기본 페이지는 첫 번째 페이지
             @RequestParam(value = "size", defaultValue = "3") int size) { // 각 페이지 당 3개의 항목
 
-        Page<BookingDto> bookingPage = bookingService.findBookingsByMemberId(membersId, PageRequest.of(page, size, Sort.by("bookingDate").descending())); // 최신순 정렬
+        Page<BookingDto> bookingPage = bookingService.findBookingsByMemberId(membersId, PageRequest.of(page, size, Sort.by("createAt").descending())); // 최신순 정렬
         Map<String, Object> response = new HashMap<>();
         response.put("result", "success");
         response.put("totalContents", bookingPage.getTotalElements()); // 전체 데이터의 수
