@@ -1,12 +1,11 @@
-package kr.co.petmates.api.bussiness.petsitter.post.controller;
+package kr.co.petmates.api.bussiness.petsitter.controller;
 
 import java.util.List;
 import java.util.Optional;
-import kr.co.petmates.api.bussiness.petsitter.post.dto.PostSearchRequestDTO;
-import kr.co.petmates.api.bussiness.petsitter.post.entity.Post;
-import kr.co.petmates.api.bussiness.petsitter.post.repository.PostRepository;
+import kr.co.petmates.api.bussiness.petsitter.dto.PostSearchRequestDTO;
+import kr.co.petmates.api.bussiness.petsitter.entity.Petsitter;
+import kr.co.petmates.api.bussiness.petsitter.repository.PetsitterPostRepository;
 import kr.co.petmates.api.bussiness.review.entity.Review;
-import kr.co.petmates.api.bussiness.review.repository.ReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -24,18 +23,18 @@ import org.springframework.web.multipart.MultipartFile;
 public class PostController {
 
     @Autowired
-    private PostRepository postRepository;
+    private PetsitterPostRepository petsitterPostRepository;
 
     @GetMapping("/posting-list")
-    public List<Post> getPostingList() {
-        return postRepository.findAll();
+    public List<Petsitter> getPostingList() {
+        return petsitterPostRepository.findAll();
     }
 
     @PostMapping("/search")
-    public List<Post> searchPetSitters(@RequestBody PostSearchRequestDTO searchRequestDTO) {
+    public List<Petsitter> searchPetSitters(@RequestBody PostSearchRequestDTO searchRequestDTO) {
 
         // careType, area1, area2 값을 사용하여 검색 로직 수행
-        return postRepository.findByCareTypeAndArea1AndArea2(
+        return petsitterPostRepository.findByCareTypeAndArea1AndArea2(
                 searchRequestDTO.getCareType(),
                 searchRequestDTO.getArea1(),
                 searchRequestDTO.getArea2()
@@ -76,18 +75,18 @@ public class PostController {
 
     @PostMapping("/posting/{id}/bringup")
     public ResponseEntity<String> bringUp(@PathVariable Long id) {
-        postRepository.bringUp(id);
+        petsitterPostRepository.bringUp(id);
         return ResponseEntity.ok("끌어올리기 성공 하였습니다.");
     }
 
     @GetMapping("/posting/{id}")
-    public Optional<Post> getPostById(@PathVariable(name = "id") Long id) {
-        return postRepository.findById(id);
+    public Optional<Petsitter> getPostById(@PathVariable(name = "id") Long id) {
+        return petsitterPostRepository.findById(id);
     }
 
     @GetMapping("/reviews")
-    public ResponseEntity<List<Review>> getReviews(@RequestParam Long petsitterId) {
-        List<Review> reviews = postRepository.findByPetsitterId(petsitterId);
+    public ResponseEntity<List<Review>> getReviews(@RequestParam Long petsitter) {
+        List<Review> reviews = petsitterPostRepository.findByPetsitter(petsitter);
         return ResponseEntity.ok(reviews);
     }
 

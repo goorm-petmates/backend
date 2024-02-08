@@ -10,7 +10,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import kr.co.petmates.api.bussiness.members.entity.Members;
-import kr.co.petmates.api.bussiness.petsitter.post.entity.Post;
+import kr.co.petmates.api.bussiness.petsitter.entity.Petsitter;
 import kr.co.petmates.api.bussiness.review.dto.ReviewDto;
 import kr.co.petmates.api.common.entity.BaseDateTimeEntity;
 import lombok.AllArgsConstructor;
@@ -64,8 +64,5 @@ public class Review extends BaseDateTimeEntity implements Serializable {
     @Getter
     @ManyToOne
     @JoinColumn(name = "petsitter")
-    private Post post;
-    public void setPost(Post post) {
-        this.post = post;
-    }
+    private Petsitter petsitter;
 }
