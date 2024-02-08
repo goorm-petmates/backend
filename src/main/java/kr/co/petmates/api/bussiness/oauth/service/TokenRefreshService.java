@@ -22,7 +22,7 @@ public class TokenRefreshService {
         }
 
         // 리프레시 토큰으로부터 사용자의 이메일(또는 사용자 식별자)을 추출합니다.
-        String email = jwtTokenProvider.getUserPk(refreshToken);
+        String email = jwtTokenProvider.getEmail(refreshToken);
 
         // 추출한 이메일을 사용하여 데이터베이스에서 사용자를 조회합니다.
         User user = userRepository.findByEmail(email)

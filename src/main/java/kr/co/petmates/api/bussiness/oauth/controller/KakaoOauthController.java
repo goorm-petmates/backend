@@ -47,34 +47,29 @@ public class KakaoOauthController {
         KakaoUserInfoResponse userInfo = kakaoOauthService.getUserInfo();
         logger.info("컨테이너 사용자정보: {}", userInfo);
 
-        String email = userInfo.getEmail(); // 사용자 이메일을 추출하여 변수에 저장
+        UserService.AuthResult authResult = userService.createUserResult(userInfo);
+
+        String email = userInfo.getEmail(); // 사용자 이메일을 추출하여 변수에 저장 //  -> 삭제
         logger.info("컨테이너 계정 이메일: {}", email);
 
-        String jwtTokenTest = jwtTokenProvider.createJwtToken(email);
+        String jwtTokenTest = jwtTokenProvider.createJwtToken(email);   //    -> 삭제
         logger.info("컨테이너 jwt 토큰: {}", jwtTokenTest);
 
-
-        // UserService를 통해 사용자 인증 처리
-        UserService.AuthResult authResult = userService.createUserFromKakao(accessToken);
+        String refreshTokenTest = jwtTokenProvider.createRefreshToken(email);   //    -> 삭제
+        logger.info("컨테이너 refresh 토큰: {}", refreshTokenTest);
 
         // AuthResult 객체에서 jwtToken과 isNewUser 값을 추출
-        String jwtToken = authResult.getToken();
+        String jwtToken = authResult.getJwtToken();
+        String refreshToken = authResult.getRefreshToken();
         boolean isNewUser = authResult.isNewUser();
 
         // 로그로 jwtToken과 isNewUser 값을 출력
         logger.info("컨테이너 JWT Token: {}", jwtToken);
+        logger.info("컨테이너 refreshToken: {}", refreshToken);
         logger.info("컨테이너 IsNewUser: {}", isNewUser);
 
-
-        // 받은 액세스 토큰으로 사용자 인증 및 JWT 토큰과 isNewUser 값을 가져옵니다.
-//        UserService.AuthResult authResult = userService.createUserFromKakao(accessToken);
-//        String jwtToken = authResult.getToken();
-//        boolean isNewUser = authResult.isNewUser();
-//        logger.info("jwtToken 값: ", jwtToken);
-//        logger.info("isNewUser 값: ", isNewUser);
-
         // 프론트엔드 URL에 JWT 토큰을 쿼리 파라미터로 추가하여 리다이렉트합니다.
-        String redirectUrl = "http://localhost:3000/oauth/redirect/token?jwtToken=" + jwtToken + "&isNewUser=" + isNewUser;
+        String redirectUrl = "http://localhost:3000/oauth/redirect/token?jwtToken=" + jwtToken + "&refreshToken=" + refreshToken + "&isNewUser=" + isNewUser;
         logger.info("컨테이너 redirectUrl: {}", redirectUrl);
         // HttpHeaders 객체를 생성합니다. 이 객체를 사용하여 HTTP 응답에 헤더를 추가할 수 있습니다.
         HttpHeaders headers = new HttpHeaders();
@@ -85,7 +80,5 @@ public class KakaoOauthController {
         logger.info("컨테이너 return: {}", responseEntity);
 // 생성한 ResponseEntity 객체를 반환합니다.
         return responseEntity;
-        // ResponseEntity 객체를 생성하여 반환합니다. 이 객체는 설정한 헤더와 HTTP 상태 코드(여기서는 302 Found, 리다이렉션을 의미)를 함께 클라이언트에 전달합니다.
-//        return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 }

@@ -83,41 +83,5 @@ public class KakaoApiClient {
 
         logger.info("kakaoApiClient 사용자정보: {}", userInfo);
         return userInfo;
-
-
-        // 방안1
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.set("Authorization", "Bearer " + accessToken);
-//
-//
-//        HttpEntity<?> userInfoEntity = new HttpEntity<>(headers);
-//
-//        // Post 방식으로 Http 요청
-//        // 응답 데이터 형식은 Hashmap 으로 지정
-//        ResponseEntity<KakaoUserInfoResponse> userResult = restTemplate.postForEntity(kakaoUserInfoEndpoint, userInfoEntity, KakaoUserInfoResponse.class);
-////        Map<String, String> userResultMap = userResult.getBody();
-//
-//
-////        HttpEntity<String> entity = new HttpEntity<>(headers);
-////        ResponseEntity<KakaoUserInfoResponse> response = restTemplate.exchange(kakaoUserInfoEndpoint, HttpMethod.GET, entity, KakaoUserInfoResponse.class);
-//        return userResult.getBody();
-//
-//
-//----------
-//
-//        RestTemplate restTemplate = new RestTemplate();
-//        String requestUrl = "https://kapi.kakao.com/v2/user/me";
-
-
-//방안2
-//        HashMap<String, String> headers = new HashMap<>();
-//        headers.put("Authorization", "Bearer " + accessToken);
-//
-//        // postForObject를 사용하여 POST 요청
-//        KakaoUserInfoResponse response = restTemplate.postForObject(kakaoUserInfoEndpoint, headers, KakaoUserInfoResponse.class);
-//
-//
-//        logger.info("사용자정보: ", response);
-//        return response;
     }
 }

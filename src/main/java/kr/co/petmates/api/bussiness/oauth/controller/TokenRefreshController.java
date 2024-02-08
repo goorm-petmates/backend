@@ -27,6 +27,11 @@ public class TokenRefreshController {
         // 새 액세스 토큰을 응답 본문에 포함하여 반환합니다.
         Map<String, String> response = new HashMap<>();
         response.put("accessToken", newAccessToken);
-        return ResponseEntity.ok(response);
+
+        // ResponseEntity 객체를 생성하여 newJwtToken 변수에 할당합니다.
+        ResponseEntity<?> newJwtToken = ResponseEntity.ok(response);
+
+        // newJwtToken 변수를 반환합니다.
+        return newJwtToken;
     }
 }

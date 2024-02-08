@@ -25,10 +25,6 @@ public class JwtTokenProvider {
     @Autowired
     private UserRepository userRepository;
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
-
-    //    private String secretKey = "YOUR_SECRET_KEY"; // JWT 서명에 사용될 비밀 키입니다. 실제 서비스에서는 안전한 키를 사용해야 합니다.
-//    @Value("${jwt.secret}")
-//    private String secretKey;
     SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256); // 안전한 키 생성
 
     public String createJwtToken(String email) {
@@ -37,18 +33,32 @@ public class JwtTokenProvider {
         Date now = new Date();
         Date validity = new Date(now.getTime() + 6 * 60 * 60 * 1000); // 6 hours
 
-        String token = Jwts.builder()
+        String jwtToken = Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
 
-        logger.info("JWT 토큰 생성(jwtTokenProvider): token={}", token);
+        logger.info("JWT 토큰 생성(jwtTokenProvider): token={}", jwtToken);
 
-        return token;
+        return jwtToken;
     }
-//
+
+    public String createRefreshToken(String email) {
+        long validityPeriodMilliseconds = 30L * 24 * 60 * 60 * 1000; // 예: 30일
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + validityPeriodMilliseconds);
+
+        String refreshToken = Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(now)
+                .setExpiration(validity)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+
+        return refreshToken;
+    }
 
     // 전달받은 JWT 토큰이 유효한지 검증하는 메소드입니다.
     public boolean validateToken(String token) {
@@ -63,33 +73,13 @@ public class JwtTokenProvider {
         }
     }
 
-    public String getUserPk(String token) {
+    public String getEmail(String token) {
         // 토큰에서 클레임을 추출합니다.
         Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
 
-        // 'subject' 클레임에서 사용자 식별자를 반환합니다.
-        return claims.getSubject();
+        // 'subject' 클레임에서 사용자 이메일을 추출하여 변수에 저장합니다.
+        String getEmail = claims.getSubject();
+        logger.error("jwtTokenProvider- JWT 토큰 사용자 추출: {}", getEmail);
+        return getEmail;
     }
 }
-
-//
-//
-//    // isNewUser 정보를 포함하는 JWT 토큰을 생성합니다.
-//    public String createToken(String userPk, boolean isNewUser) {
-//        Claims claims = Jwts.claims().setSubject(userPk);
-//        claims.put("isNewUser", isNewUser); // 추가 정보 포함
-//
-//        Date now = new Date();
-//        Date validity = new Date(now.getTime() + 6 * 60 * 60 * 1000); // 6 hours
-//
-//        String token = Jwts.builder()
-//                .setClaims(claims)
-//                .setIssuedAt(now)
-//                .setExpiration(validity)
-//                .signWith(SignatureAlgorithm.HS256, secretKey)
-//                .compact();
-//
-//        logger.info("JWT 토큰 생성: userPk={}, isNewUser={}, token={}", userPk, isNewUser, token);
-//
-//        return token;
-//    }

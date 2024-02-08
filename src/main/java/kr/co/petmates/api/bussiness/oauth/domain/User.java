@@ -15,6 +15,7 @@ public class User {
     private String email; // 카카오에서 카카오계정(email)으로 제공받은 이메일 저장
     private String nickname; // 카카오에서 닉네임(nickname)으로 제공받은 이름 저장
     private String profileImage; // 카카오에서 프로필 사진(profileImage)으로 제공받은 URL 저장
+    private String refreshToken;
 
 //    private String roles; // 사용자의 역할을 저장하는 필드
 //public String getRoles() {
@@ -102,5 +103,23 @@ public class User {
      */
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    /**
+     * 리프레시 토큰을 반환합니다.
+     *
+     * @return 리프레시 토큰
+     */
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    /**
+     * 리프레시 토큰을 설정합니다.
+     *
+     * @param refreshToken 리프레시 토큰
+     */
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }
