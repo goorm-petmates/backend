@@ -1,6 +1,8 @@
 package kr.co.petmates.api.bussiness.petsitter.controller;
 
 import java.util.Map;
+import java.util.Optional;
+import kr.co.petmates.api.bussiness.petsitter.dto.PetsitterDto;
 import kr.co.petmates.api.bussiness.petsitter.service.PetsitterPostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +24,7 @@ public class PetsitterPostController {
                 .map(petsitterId -> {
                     // petsitterId를 사용하여 필요한 추가 데이터를 검색
 
-                    var content = petsitterPostService.getContentsByPetsitterId(petsitterId);
+                    Optional<PetsitterDto> content = petsitterPostService.getContentsByPetsitterId(petsitterId);
                     return ResponseEntity.ok()
                             .body(Map.of("exists", true,
                                     "petsitter_id", petsitterId,

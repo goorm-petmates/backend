@@ -10,14 +10,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-//import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import kr.co.petmates.api.bussiness.members.entity.Members;
-//import kr.co.petmates.api.bussiness.petsitter.post.dto.PostSearchRequestDTO;
 import kr.co.petmates.api.common.entity.BaseDateTimeEntity;
 import kr.co.petmates.api.enums.CareType;
 import lombok.AllArgsConstructor;
@@ -69,8 +67,8 @@ public class Petsitter extends BaseDateTimeEntity implements Serializable {
     @Column(nullable = false)
     private Integer averageRating;  //  평균 리뷰 평점
 
-    @Column(nullable = false)
-    private LocalDate orderByDate;  //  정렬 기준 날짜
+    @Column(name ="order_by_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private LocalDateTime orderByDate;  //  정렬 기준 날짜
 
     @Column(nullable = false)
     private Boolean isKakaoProfile; //  카카오 소셜 프로필 사용 여부
@@ -91,18 +89,8 @@ public class Petsitter extends BaseDateTimeEntity implements Serializable {
     @Column(nullable = false)
     private Boolean isBringUp;      // 끌어올림 여부
 
-    @OneToOne(fetch = FetchType.LAZY)
+    // 멤버와 연결
+    @OneToOne
     @JoinColumn(name = "members_id")
-    private Members members; // 멤버와 연결
-
-    //    // 펫시터와 Members -> MembersId 연결
-//    @Getter
-//    @ManyToOne
-//    @JoinColumn(name = "membersId")
-//    private Members petsitter;
-//
-//    public void setOwner(Members petsitter) {
-//        this.petsitter = petsitter;
-//    }
-
+    private Members members;
 }

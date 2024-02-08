@@ -2,6 +2,7 @@ package kr.co.petmates.api.bussiness.petsitter.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import kr.co.petmates.api.bussiness.petsitter.entity.Petsitter;
 import kr.co.petmates.api.enums.CareType;
 import lombok.AllArgsConstructor;
@@ -23,7 +24,7 @@ public class PetsitterDto {
     private Integer viewCnt;        // 조회수
     private Integer reviewCnt;      // 리뷰수
     private Integer averageRating;  // 평균 리뷰 평점
-    private LocalDate orderByDate;  // 정렬 기준 날짜
+    private LocalDateTime orderByDate;  // 정렬 기준 날짜
     private Boolean isKakaoProfile; // 카카오 소셜 프로필 사용 여부
     private String profilePath;     // 소셜 프로필 이미지 경로
     private CareType careType;      // 데이케어, 1박케어
