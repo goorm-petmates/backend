@@ -18,6 +18,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import kr.co.petmates.api.bussiness.members.entity.Members;
+import kr.co.petmates.api.bussiness.petsitter.entity.Petsitter;
 import kr.co.petmates.api.common.entity.BaseDateTimeEntity;
 import kr.co.petmates.api.enums.BookingStatus;
 import lombok.AllArgsConstructor;
@@ -77,7 +78,7 @@ public class Booking extends BaseDateTimeEntity implements Serializable {
     @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
     private CanceledBooking canceledBooking;
 
-//    @ManyToOne
-//    @JoinColumn(name = "petsitter_id", nullable = false)
-//    private PetSitter petSitter;
+    @ManyToOne
+    @JoinColumn(name = "petsitter_id", nullable = false)
+    private Petsitter petsitter;
 }
