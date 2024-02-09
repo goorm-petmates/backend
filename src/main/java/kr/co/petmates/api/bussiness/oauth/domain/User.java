@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long kakaoId;
 
     private String email; // 카카오에서 카카오계정(email)으로 제공받은 이메일 저장
     private String nickname; // 카카오에서 닉네임(nickname)으로 제공받은 이름 저장
@@ -38,17 +38,17 @@ public class User {
      *
      * @return 사용자 ID
      */
-    public Long getId() {
-        return id;
+    public Long getKakaoId() {
+        return kakaoId;
     }
 
     /**
      * 사용자 ID를 설정합니다.
      *
-     * @param id 사용자 ID
+     * @param kakaoId 사용자 ID
      */
-    public void setId(Long id) {
-        this.id = id;
+    public void setKakaoId(Long kakaoId) {
+        this.kakaoId = kakaoId;
     }
 
     /**
