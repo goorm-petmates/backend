@@ -48,15 +48,15 @@ public class KakaoOauthController {
         logger.info("컨테이너 사용자정보: {}", userInfo);
 
         // 사용자정보로 jwt 토큰, refresh 토큰 생성, 사용자정보 저장 요청
-        UserService.AuthResult authResult = userService.createUserResult(userInfo, accessToken);
+        UserService.AuthResult authResult = userService.createUserResult(userInfo);
 
         String email = userInfo.getEmail(); // 사용자 이메일을 추출하여 변수에 저장 //  -> 삭제
         logger.info("컨테이너 계정 이메일: {}", email);
 
-        String jwtTokenTest = jwtTokenProvider.createJwtToken(email, accessToken);   //    -> 삭제
+        String jwtTokenTest = jwtTokenProvider.createJwtToken(email);   //    -> 삭제
         logger.info("컨테이너 jwt 토큰: {}", jwtTokenTest);
 
-        String refreshTokenTest = jwtTokenProvider.createRefreshToken(jwtTokenTest);   //    -> 삭제
+        String refreshTokenTest = jwtTokenProvider.createRefreshToken(email);   //    -> 삭제
         logger.info("컨테이너 refresh 토큰: {}", refreshTokenTest);
 
         // AuthResult 객체에서 jwtToken과 isNewUser 값을 추출

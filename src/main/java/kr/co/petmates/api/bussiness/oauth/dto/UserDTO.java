@@ -3,7 +3,6 @@
 package kr.co.petmates.api.bussiness.oauth.dto;
 
 public class UserDTO {
-    private Long kakaoId;
     private String email; // 카카오 계정 이메일
     private String nickname; // 닉네임
     private String profileImage; // 프로필 사진 URL
@@ -13,21 +12,13 @@ public class UserDTO {
     }
 
     // 생성자
-    public UserDTO(Long kakaoId, String email, String nickname, String profileImage) {
-        this.kakaoId = kakaoId;
+    public UserDTO(String email, String nickname, String profileImage) {
         this.email = email;
         this.nickname = nickname;
         this.profileImage = profileImage;
     }
 
     // Getters
-
-    public Long getKakaoId() {
-        return kakaoId;
-    }
-    public void setKakaoId(Long kakaoId) {
-        this.kakaoId = kakaoId;
-    }
 
     /**
      * 카카오 계정 이메일을 반환합니다.
