@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     // 사용자 카카오 계정 이메일을 기반으로 사용자를 조회합니다.
     Optional<User> findByEmail(String email);
+    Optional<User> findByRefreshToken(String refreshToken);
 }

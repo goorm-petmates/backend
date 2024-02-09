@@ -47,6 +47,7 @@ public class KakaoOauthController {
         KakaoUserInfoResponse userInfo = kakaoOauthService.getUserInfo();
         logger.info("컨테이너 사용자정보: {}", userInfo);
 
+        // 사용자정보로 jwt 토큰, refresh 토큰 생성, 사용자정보 저장 요청
         UserService.AuthResult authResult = userService.createUserResult(userInfo);
 
         String email = userInfo.getEmail(); // 사용자 이메일을 추출하여 변수에 저장 //  -> 삭제

@@ -61,13 +61,13 @@ public class JwtTokenProvider {
     }
 
     // 전달받은 JWT 토큰이 유효한지 검증하는 메소드입니다.
-    public boolean validateToken(String token) {
+    public boolean validateToken(String jwtToken) {
         try {
-            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token); // 비밀 키를 사용하여 토큰을 파싱하고 검증합니다. 
-            logger.info("JWT 토큰 유효성 체크: token={}", token);
+            logger.info("JWT 토큰 유효성 체크함수 전달받은 토큰: jwtToken={}", jwtToken);
+            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken); // 비밀 키를 사용하여 토큰을 파싱하고 검증합니다.
             return true; // 토큰이 유효하면 true를 반환합니다.
         } catch (JwtException | IllegalArgumentException e) {
-            logger.error("JWT 토큰 유효하지 않음: token={}, error={}", token, e.getMessage());
+            logger.error("JWT 토큰 유효하지 않음: token={}, error={}", jwtToken, e.getMessage());
             // 토큰이 유효하지 않거나 파싱 중 오류가 발생한 경우 처리합니다.
             return false; // 토큰이 유효하지 않으면 false를 반환합니다.
         }

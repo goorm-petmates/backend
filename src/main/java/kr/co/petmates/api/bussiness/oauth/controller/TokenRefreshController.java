@@ -22,7 +22,7 @@ public class TokenRefreshController {
     public ResponseEntity<?> refreshAccessToken(@RequestBody Map<String, String> request) {
         // 요청 본문에서 "refreshToken"을 추출하여 토큰 갱신 서비스를 호출합니다.
         String refreshToken = request.get("refreshToken");
-        String newAccessToken = tokenRefreshService.refreshToken(refreshToken);
+        String newAccessToken = tokenRefreshService.updateToken(refreshToken);
 
         // 새 액세스 토큰을 응답 본문에 포함하여 반환합니다.
         Map<String, String> response = new HashMap<>();

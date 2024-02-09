@@ -14,7 +14,7 @@ public class TokenRefreshService {
     @Autowired
     private UserRepository userRepository; // 사용자 정보를 조회 및 관리하는 레포지토리를 주입합니다.
 
-    public String refreshToken(String refreshToken) {
+    public String updateToken(String refreshToken) {
         // 리프레시 토큰을 받아 새 액세스 토큰을 생성하는 메소드입니다.
         if (!jwtTokenProvider.validateToken(refreshToken)) {
             // 리프레시 토큰의 유효성을 검증합니다. 유효하지 않으면 예외를 던집니다.
@@ -23,6 +23,9 @@ public class TokenRefreshService {
 
         // 리프레시 토큰으로부터 사용자의 이메일(또는 사용자 식별자)을 추출합니다.
         String email = jwtTokenProvider.getEmail(refreshToken);
+
+        jwtTokenProvider.createJwtToken(email);
+        jwtTokenProvider.createRefreshToken(email);
 
         // 추출한 이메일을 사용하여 데이터베이스에서 사용자를 조회합니다.
         User user = userRepository.findByEmail(email)
