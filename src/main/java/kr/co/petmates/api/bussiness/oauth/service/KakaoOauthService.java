@@ -18,14 +18,14 @@ public class KakaoOauthService {
     private static final Logger logger = LoggerFactory.getLogger(KakaoOauthController.class);
     @Autowired
     private KakaoApiClient kakaoApiClient;
-
     @Autowired
     private AccessTokenStorage accessTokenStorage; // AccessTokenStorage 추가
 
     // 인가 코드를 통해 카카오로부터 액세스 토큰을 받아오는 메소드
-    public String getAccessToken(HttpSession session, String authorizationCode) {
-        KakaoTokenResponse tokenResponse = kakaoApiClient.getAccessToken(authorizationCode);
-        String accessToken = tokenResponse.getAccess_token();
+    public String getAccessToken(HttpSession session, String code) {
+        KakaoTokenResponse kakaoTokenResponse = kakaoApiClient.getAccessToken(code);
+        String accessToken = kakaoTokenResponse.getAccess_token();
+        logger.info("KakaoOauthService 카카오api 통해 생선한 엑세스토큰, 반환값: {}", accessToken);
 
         // 액세스 토큰을 TokenStorage에 저장
 //        accessTokenStorage.setAccessToken2(accessToken);
@@ -34,7 +34,6 @@ public class KakaoOauthService {
         String storageAccessToken = accessTokenStorage.getAccessToken(session);
         logger.info("KakaoOauthService 생성후 저장된 엑세스토큰 accessTokenStorage.getAccessToken: {}", storageAccessToken);
 
-        logger.info("KakaoOauthService 카카오api 통해 생선한 엑세스토큰, 반환값: {}", accessToken);
         return accessToken;
     }
 

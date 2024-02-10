@@ -4,20 +4,19 @@ package kr.co.petmates.api.bussiness.oauth.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.co.petmates.api.bussiness.oauth.controller.KakaoOauthController;
+import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class KakaoUserInfoResponse {
-    private static final Logger logger = LoggerFactory.getLogger(KakaoOauthController.class);
+
     @Getter
-    @JsonProperty("kakaoId")
+    @JsonProperty("id")
     private Long kakaoId; // 사용자의 고유 ID
 
+    @Getter
     @JsonProperty("connected_at")
-    private String connectedAt; // 사용자가 카카오와 연결된 시간
+    private Date connectedAt; // 사용자가 카카오와 연결된 시간
 
     @Getter
     @JsonProperty("kakao_account")
@@ -42,9 +41,13 @@ public class KakaoUserInfoResponse {
         @JsonProperty("email_needs_agreement")
         private boolean emailNeedsAgreement; // 이메일 정보 제공 동의 여부
 
+        @Setter
+        @Getter
         @JsonProperty("is_email_valid")
         private boolean isEmailValid; // 이메일 유효 여부
 
+        @Setter
+        @Getter
         @JsonProperty("is_email_verified")
         private boolean isEmailVerified; // 이메일 검증 여부
 
@@ -53,18 +56,10 @@ public class KakaoUserInfoResponse {
         @JsonProperty("email")
         private String email; // 사용자 이메일
 
-//        @Setter
+        //        @Setter
         @Getter
         @JsonProperty("profile")
         private Profile profile; // 사용자의 프로필 정보입니다.
-
-        @Setter
-        @Getter
-        private Long kakaoId;
-
-        @Setter
-        @Getter
-        private String connectedAt;
 
         // 사용자의 프로필 정보를 담는 내부 클래스입니다.
         public static class Profile {
@@ -89,11 +84,6 @@ public class KakaoUserInfoResponse {
 
             @Setter
             @Getter
-            private boolean isEmailValid;
-
-            @Setter
-            @Getter
-            private boolean isEmailVerified;
             @JsonProperty("is_default_image")
             private boolean isDefaultImage; // 기본 이미지 사용 여부
 
@@ -109,7 +99,7 @@ public class KakaoUserInfoResponse {
     // Getters and Setters for KakaoUserInfoResponse
 
     // 카카오 API 응답에서 'kakao_account' JSON 객체를 kakaoAccount 필드에 매핑
-    @JsonProperty("kakaoId")
+    @JsonProperty("id")
     public void setKakaoId(Long kakaoId) {
         this.kakaoId = kakaoId;
     }
@@ -162,7 +152,7 @@ public class KakaoUserInfoResponse {
 
 
 
-    // 방안1
+// 방안1
 //    private String nickname; // 닉네임
 //    private String profileImage; // 프로필 사진
 //    private String accountEmail; // 카카오 계정 이메일

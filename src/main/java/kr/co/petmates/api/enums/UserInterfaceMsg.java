@@ -5,8 +5,6 @@ import lombok.Getter;
 @Getter
 public enum UserInterfaceMsg {
     VALIDATE_PHONE_NUMBER("전화번호 형식을 확인해주세요"),
-
-    // 펫 정보 등록
     ERR_SAVE_INPUT_TYPE ("올바르지 않은 형식입니다."),
     ERR_NOT_REQUIRED_FIELD ("필수값이 모두 입력되지 않았습니다"),
     ERR_UPLOAD_FAILED ("업로드 실패"),

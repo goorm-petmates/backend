@@ -18,6 +18,7 @@ public class PetDto {
     private Long id; // 시퀀스
     private Long membersId; // 멤버를 참조하기 위한 ID
 //    private Long petsitterId; // 펫시터를 참조하기 위한 ID
+    private Long petPhotoId;
 
     @NotNull
     @Pattern(regexp = "^[가-힣_]{1,10}$")
@@ -44,6 +45,9 @@ public class PetDto {
     private boolean isDisease; // 질병
 
     private String ect; // 참고사항
+
+    private String photoUrl; // 사진 접근을 위한 URL
+
 
     public static PetDto toPetDto(Pet pet) { // entity -> dto
         PetDto petDto = new PetDto();

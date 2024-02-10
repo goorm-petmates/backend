@@ -17,7 +17,7 @@ public class UserCheckService {
     }
 
     // 사용자 존재 여부를 확인하고 업데이트하거나 새로 저장합니다.
-    public void saveOrUpdateUser(KakaoUserInfoResponse userInfo, String refreshToken) {
+    public void saveOrUpdateUser(KakaoUserInfoResponse userInfo) {
         String email = userInfo.getEmail();
         User user = userRepository.findByEmail(email)
                 .orElseGet(User::new); // 기존 사용자가 없을 경우 새 User 객체 생성
@@ -27,7 +27,6 @@ public class UserCheckService {
         user.setKakaoId(userInfo.getKakaoId());
         user.setNickname(userInfo.getNickname());
         user.setProfileImage(userInfo.getProfileImage());
-        user.setRefreshToken(refreshToken);
 
         userRepository.save(user); // 변경된 정보를 저장하거나 신규 사용자를 저장합니다.
     }

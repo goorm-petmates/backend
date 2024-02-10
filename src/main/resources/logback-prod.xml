@@ -1,17 +1,35 @@
 <configuration>
 
-    <!-- 로그 출력 위치와 파일 이름 설정 -->
+    <!-- 로그 파일 경로 -->
     <property name="LOG_PATH" value="src/main/resources/logs/prod" />
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>${LOG_PATH}/prod.log</file>
+
+    <!-- 로그 패턴 -->
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) [%thread] %magenta(%logger) - %cyan(%msg%n)" />
+
+    <!-- 콘솔 출력 설정 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg%n</pattern>
+            <pattern>${LOG_PATTERN}</pattern>
         </encoder>
     </appender>
 
-    <!-- 루트 로거 설정 -->
+    <timestamp key="byDate" datePattern="yyyy-MM-dd"/>
+    <!-- prod 로그 파일 설정 -->
+    <appender name="LOG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/prod.${byDate}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/prod_%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>90</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
     <root level="INFO">
-        <appender-ref ref="FILE" />
+        <!--    <root level="DEBUG">-->
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="LOG_FILE" />
     </root>
 
 </configuration>

@@ -17,13 +17,11 @@ public class AccessTokenStorage {
     public String getAccessToken(HttpSession session) {
         return (String) session.getAttribute("accessToken");
     }
-
-
-    public String getAccessToken2() {
-        return accessToken;
-    }
-
-    public void setAccessToken2(String accessToken) {
-        this.accessToken = accessToken;
-    }
+//    public String getAccessToken2() {
+//        return accessToken;
+//    }
+//
+//    public void setAccessToken2(String accessToken) {
+//        this.accessToken = accessToken;
+//    }
 }

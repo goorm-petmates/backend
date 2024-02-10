@@ -35,8 +35,9 @@ public class PetPhoto {
     @Column(length = 500)
     private String storedFileName;
 
+    // Pet 엔터티와의 양방향 연결
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pet_id", nullable = false)
+    @JoinColumn(name = "pet_id")
     private Pet pet;
 
     public static PetPhoto toPetPhotoEntity(PetPhotoDto petPhotoDto) { // dto -> entity

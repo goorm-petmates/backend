@@ -42,13 +42,13 @@ public class KakaoApiClient {
         this.restTemplate = new RestTemplate();
     }
 
-    // 인가코드로 엑세스토콘 요청하기
-    public KakaoTokenResponse getAccessToken(String authorizationCode) {
+    // 인가코드로 엑세스토큰 요청하기
+    public KakaoTokenResponse getAccessToken(String code) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", clientId);
         params.add("redirect_uri", redirectUri);
-        params.add("code", authorizationCode);
+        params.add("code", code);
         params.add("client_secret", clientSecret);
 
         HttpHeaders headers = new HttpHeaders();
@@ -57,8 +57,9 @@ public class KakaoApiClient {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
         ResponseEntity<KakaoTokenResponse> response = restTemplate.exchange(kakaoTokenEndpoint, HttpMethod.POST, request, KakaoTokenResponse.class);
 
-        logger.info("kakaoApiClient 카카오 요청해서 생성한 엑세스토큰: {}", response.getBody());
-        return response.getBody();
+        KakaoTokenResponse accessToken = response.getBody();
+        logger.info("kakaoApiClient 카카오 요청해서 생성한 엑세스토큰: {}", accessToken);
+        return accessToken;
     }
 
     // 엑세스토큰으로 사용자정보 요청하기
