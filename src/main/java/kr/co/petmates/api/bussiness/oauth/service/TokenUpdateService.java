@@ -12,10 +12,10 @@ public class TokenUpdateService {
     public String updateJwtToken(String jwtToekn) {
         // 리프레시 토큰으로부터 사용자이메일, 엑세스토큰 추출합니다.
         String email = jwtTokenProvider.getEmail(jwtToekn);
-        String accessToken = jwtTokenProvider.getAccessToken(jwtToekn);
+//        String accessToken = jwtTokenProvider.getAccessToken(jwtToekn);
 //        jwtTokenProvider.createRefreshToken(jwtToekn);
 
-        String newJwtToken = jwtTokenProvider.createJwtToken(email, accessToken);
+        String newJwtToken = jwtTokenProvider.createJwtToken(email);
         // 새로운 액세스 토큰을 생성하여 반환합니다.
         return newJwtToken;
     }

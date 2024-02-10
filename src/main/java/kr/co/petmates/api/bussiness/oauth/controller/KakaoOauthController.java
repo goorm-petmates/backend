@@ -3,7 +3,6 @@ package kr.co.petmates.api.bussiness.oauth.controller;
 
 import jakarta.servlet.http.HttpSession;
 import java.util.Map;
-import kr.co.petmates.api.bussiness.oauth.config.JwtTokenProvider;
 import kr.co.petmates.api.bussiness.oauth.dto.KakaoUserInfoResponse;
 import kr.co.petmates.api.bussiness.oauth.service.KakaoOauthService;
 import kr.co.petmates.api.bussiness.oauth.service.UserService;
@@ -28,19 +27,16 @@ public class KakaoOauthController {
 
     @Autowired // UserService 객체를 자동으로 주입합니다.
     private UserService userService;
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/login") // "/login" 경로로 POST 요청이 오면 이 메소드를 실행합니다.
     public ResponseEntity<?> kakaoLogin(HttpSession session, @RequestBody Map<String, String> requestBody) {
         String code = requestBody.get("code");
-        if (code == null) {
-            logger.error("인가코드 비어있음");
+        if (code == null) { // 인가코드 null 인 경우
             return ResponseEntity.badRequest().body("Authorization code is missing");
         }
         logger.info("인가코드: {}", code);
-  // code = null 인 경우 체크,
-    // 인가 코드를 사용하여 액세스 토큰을 요청합니다.
+
+        // 인가 코드를 사용하여 액세스 토큰을 요청 및 세션 저장합니다.
         String accessToken = kakaoOauthService.getAccessToken(session, code);
         logger.info("컨테이너 새로 생성된 엑세스토큰: {}", accessToken);
 
@@ -49,29 +45,18 @@ public class KakaoOauthController {
         logger.info("컨테이너 사용자정보: {}", userInfo);
 
         // 사용자정보로 jwt 토큰, refresh 토큰 생성, 사용자정보 저장 요청
-        UserService.AuthResult authResult = userService.createUserResult(userInfo, accessToken);
-
-        String email = userInfo.getEmail(); // 사용자 이메일을 추출하여 변수에 저장 //  -> 삭제
-        logger.info("컨테이너 계정 이메일: {}", email);
-
-        String jwtTokenTest = jwtTokenProvider.createJwtToken(email, accessToken);   //    -> 삭제
-        logger.info("컨테이너 jwt 토큰: {}", jwtTokenTest);
-
-        String refreshTokenTest = jwtTokenProvider.createRefreshToken(jwtTokenTest);   //    -> 삭제
-        logger.info("컨테이너 refresh 토큰: {}", refreshTokenTest);
+        UserService.AuthResult authResult = userService.createUserResult(userInfo);
 
         // AuthResult 객체에서 jwtToken과 isNewUser 값을 추출
         String jwtToken = authResult.getJwtToken();
         String refreshToken = authResult.getRefreshToken();
         boolean isNewUser = authResult.isNewUser();
-
-        // 로그로 jwtToken과 isNewUser 값을 출력
         logger.info("컨테이너 JWT Token: {}", jwtToken);
         logger.info("컨테이너 refreshToken: {}", refreshToken);
         logger.info("컨테이너 IsNewUser: {}", isNewUser);
 
         // 프론트엔드 URL에 JWT 토큰을 쿼리 파라미터로 추가하여 리다이렉트합니다.
-        String redirectUrl = "http://localhost:3000/oauth/redirect/token?jwtToken=" + jwtToken + "&refreshToken=" + refreshToken + "&isNewUser=" + isNewUser;
+        String redirectUrl = "http://localhost:3000/jwtToken=" + jwtToken + "&refreshToken=" + refreshToken + "&isNewUser=" + isNewUser;
         logger.info("컨테이너 redirectUrl: {}", redirectUrl);
         // HttpHeaders 객체를 생성합니다. 이 객체를 사용하여 HTTP 응답에 헤더를 추가할 수 있습니다.
         HttpHeaders headers = new HttpHeaders();

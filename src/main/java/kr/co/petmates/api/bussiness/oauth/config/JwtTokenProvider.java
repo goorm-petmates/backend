@@ -18,16 +18,14 @@ public class JwtTokenProvider {
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
     SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256); // 안전한 키 생성
 
-    public String createJwtToken(String email, String accessToken) {
+    public String createJwtToken(String email) {
         logger.info("(jwtTokenProvider): 사용자 이메일={}", email);
-        logger.info("(jwtTokenProvider): accessToken={}", accessToken);
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + 6 * 60 * 60 * 1000); // 6 hours
 
         String jwtToken = Jwts.builder()
                 .setSubject(email)
-                .claim("accessToken", accessToken)
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
@@ -45,17 +43,14 @@ public class JwtTokenProvider {
                 .parseClaimsJws(jwtToken)
                 .getBody();
         String email = claims.getSubject();
-        String accessToken = claims.get("accessToken", String.class);
 
         logger.info("(jwtTokenProvider): 사용자 이메일={}", email);
-        logger.info("(jwtTokenProvider): 기존 accessToken={}", accessToken);
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + 30L * 24 * 60 * 60 * 1000); // 30 days
 
         String refreshToken = Jwts.builder()
                 .setSubject(email)
-                .claim("accessToken", accessToken)
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
@@ -89,16 +84,5 @@ public class JwtTokenProvider {
         String getEmail = claims.getSubject();
 
         return getEmail; // 사용자 이메일 추출
-    }
-
-    // JWT에서 엑세스 토큰 추출
-    public String getAccessToken(String jwtToken) throws JwtException {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(jwtToken)
-                .getBody();
-        String getAccessToken = claims.get("accessToken", String.class);
-        return getAccessToken; // 엑세스 토큰 추출
     }
 }
