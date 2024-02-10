@@ -9,16 +9,12 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
 import javax.crypto.SecretKey;
-import kr.co.petmates.api.bussiness.oauth.service.TokenUpdateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component // 이 클래스를 스프링 빈으로 등록합니다.
 public class JwtTokenProvider {
-    @Autowired
-    private TokenUpdateService tokenUpdateService;
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
     SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256); // 안전한 키 생성
 

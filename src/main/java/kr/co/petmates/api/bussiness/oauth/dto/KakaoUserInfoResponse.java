@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 public class KakaoUserInfoResponse {
     private static final Logger logger = LoggerFactory.getLogger(KakaoOauthController.class);
+    @Getter
     @JsonProperty("kakaoId")
     private Long kakaoId; // 사용자의 고유 ID
 
@@ -108,6 +109,10 @@ public class KakaoUserInfoResponse {
     // Getters and Setters for KakaoUserInfoResponse
 
     // 카카오 API 응답에서 'kakao_account' JSON 객체를 kakaoAccount 필드에 매핑
+    @JsonProperty("kakaoId")
+    public void setKakaoId(Long kakaoId) {
+        this.kakaoId = kakaoId;
+    }
     @JsonProperty("kakao_account")
     public void setKakaoAccount(KakaoAccount kakaoAccount) {
         this.kakaoAccount = kakaoAccount;
