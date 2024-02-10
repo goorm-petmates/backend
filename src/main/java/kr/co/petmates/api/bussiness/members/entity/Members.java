@@ -37,16 +37,18 @@ public class Members extends BaseDateTimeEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(updatable = false)
     private Long id; // 시퀀스
+//
+//    @Id
+//    private Long kakaoId;
 
     @Column(nullable = false, unique = true)
     private String email; // 이메일
 
-    @Column(nullable = false)
-//    @Convert(converter = PasswordEncryptConverter.class)
-    private String pwd; // 패스워드
-
     @Column(nullable = false, length = 255)
     private String nickname; // 닉네임
+
+    private String profileImage; // 카카오에서 프로필 사진(profileImage)으로 제공받은 URL 저장
+    private String refreshToken;
 
     @Column(length = 16)
     private String phone; // 휴대폰 번호

@@ -63,11 +63,12 @@ public class SecurityConfig {
                                 .requestMatchers("/api/kakao/**", "/api/oauth/**", "/api/members/test","/api/my-page/**",
                                         "/v3/**", "/swagger-ui/**", "/api/reserve/**",
                                         "/api/members/login").permitAll() // 접근 허용
+                                .requestMatchers("/api/kakao/login").permitAll() // /api/kakao/login에 대한 접근 허용
                                 .requestMatchers("/api/members/my-info", "/api/members/add-image", "/api/members/delete",
                                         "/api/members/logout", "/adm/test",
                                         "/api/ide/**", "/api/chat/**", "/chat/**").authenticated() // 로그인했을 때 접근 허용
                                 .requestMatchers(PathRequest.toH2Console()).permitAll() // H2 콘솔접근 허용
-                                .anyRequest().authenticated() // 그 외 요청은 인증 필요
+//                                .anyRequest().authenticated() // 그 외 요청은 인증 필요
                 )
 //                .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class) // JwtFilter 추가
                 // 'apply(C)' is deprecated since version 6.2 and marked for removal
@@ -88,11 +89,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*")); // 실제 환경에서는 구체적으로 지정
-//        configuration.setAllowedOrigins(Arrays.asList("https://example.com"));
+//        configuration.setAllowedOrigins(Arrays.asList("*")); // 실제 환경에서는 구체적으로 지정
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
         configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
+        configuration.setAllowCredentials(true); // 쿠키, 인증 등의 정보를 포함한 요청 허용
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
