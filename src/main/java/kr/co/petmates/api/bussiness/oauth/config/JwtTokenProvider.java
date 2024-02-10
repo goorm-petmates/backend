@@ -6,9 +6,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import java.util.Date;
 import javax.crypto.SecretKey;
+import kr.co.petmates.api.config.jwt.SecretKeySingleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,8 @@ import org.springframework.stereotype.Component;
 @Component // 이 클래스를 스프링 빈으로 등록합니다.
 public class JwtTokenProvider {
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
-    SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256); // 안전한 키 생성
+    SecretKey secretKey = SecretKeySingleton.getSecretKeyInstance();
+//    SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256); // 안전한 키 생성
 
     public String createJwtToken(String email) {
         logger.info("(jwtTokenProvider): 사용자 이메일={}", email);
