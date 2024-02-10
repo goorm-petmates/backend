@@ -2,6 +2,7 @@
 package kr.co.petmates.api.bussiness.oauth.controller;
 
 import jakarta.servlet.http.HttpSession;
+import java.util.HashMap;
 import java.util.Map;
 import kr.co.petmates.api.bussiness.oauth.dto.KakaoUserInfoResponse;
 import kr.co.petmates.api.bussiness.oauth.service.KakaoOauthService;
@@ -9,8 +10,6 @@ import kr.co.petmates.api.bussiness.oauth.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,26 +45,14 @@ public class KakaoOauthController {
 
         // 사용자정보로 jwt 토큰, refresh 토큰 생성, 사용자정보 저장 요청
         UserService.AuthResult authResult = userService.createUserResult(userInfo);
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("jwtToken", authResult.getJwtToken());
+        responseBody.put("refreshToken", authResult.getRefreshToken());
+        responseBody.put("isNewUser", authResult.isNewUser());
 
-        // AuthResult 객체에서 jwtToken과 isNewUser 값을 추출
-        String jwtToken = authResult.getJwtToken();
-        String refreshToken = authResult.getRefreshToken();
-        boolean isNewUser = authResult.isNewUser();
-        logger.info("컨테이너 JWT Token: {}", jwtToken);
-        logger.info("컨테이너 refreshToken: {}", refreshToken);
-        logger.info("컨테이너 IsNewUser: {}", isNewUser);
+        // 여기서 responseBody를 ResponseEntity에 담아 반환하되, 변수명을 responseLogin으로 사용하고 싶은 의도를 반영
+        ResponseEntity<Map<String, Object>> responseLogin = ResponseEntity.ok(responseBody);
 
-        // 프론트엔드 URL에 JWT 토큰을 쿼리 파라미터로 추가하여 리다이렉트합니다.
-        String redirectUrl = "http://localhost:3000/jwtToken=" + jwtToken + "&refreshToken=" + refreshToken + "&isNewUser=" + isNewUser;
-        logger.info("컨테이너 redirectUrl: {}", redirectUrl);
-        // HttpHeaders 객체를 생성합니다. 이 객체를 사용하여 HTTP 응답에 헤더를 추가할 수 있습니다.
-        HttpHeaders headers = new HttpHeaders();
-        // 'Location' 헤더에 리다이렉션할 URL을 추가합니다. 이 헤더는 클라이언트에게 새로운 위치로 이동하라는 지시를 담고 있습니다.
-        headers.add("Location", redirectUrl);
-        // ResponseEntity 객체를 생성하여 변수에 할당합니다. 이 객체는 설정한 헤더와 HTTP 상태 코드(여기서는 302 Found, 리다이렉션을 의미)를 함께 클라이언트에 전달합니다.
-        ResponseEntity<Object> responseEntity = new ResponseEntity<>(headers, HttpStatus.FOUND);
-        logger.info("컨테이너 return: {}", responseEntity);
-// 생성한 ResponseEntity 객체를 반환합니다.
-        return responseEntity;
+        return responseLogin;
     }
 }
