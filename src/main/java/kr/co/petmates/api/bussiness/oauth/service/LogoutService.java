@@ -30,13 +30,14 @@ public class LogoutService {
         this.userRepository = userRepository;
     }
 
-    public void logout(HttpSession session) {
+    public boolean logout(HttpSession session) {
         String accessToken = accessTokenStorage.getAccessToken(session);
         kakaoLogout(accessToken); // 이 메소드는 실제 카카오 로그아웃 API를 호출하는 구현이 필요합니다.
 
         // 세션 무효화
         session.invalidate();
         logger.info("카카오 로그아웃 완료");
+        return true;
     }
 
     public void kakaoLogout(String accessToken) {
