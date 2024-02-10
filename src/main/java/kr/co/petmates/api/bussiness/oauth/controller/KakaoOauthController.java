@@ -1,6 +1,7 @@
 // KakaoOauthController는 사용자의 인가 코드를 처리하고, JWT 토큰을 생성하여 반환하는 컨트롤러입니다.
 package kr.co.petmates.api.bussiness.oauth.controller;
 
+import jakarta.servlet.http.HttpSession;
 import java.util.Map;
 import kr.co.petmates.api.bussiness.oauth.config.JwtTokenProvider;
 import kr.co.petmates.api.bussiness.oauth.dto.KakaoUserInfoResponse;
@@ -31,7 +32,7 @@ public class KakaoOauthController {
     private JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/login") // "/login" 경로로 POST 요청이 오면 이 메소드를 실행합니다.
-    public ResponseEntity<?> kakaoLogin(@RequestBody Map<String, String> requestBody) {
+    public ResponseEntity<?> kakaoLogin(HttpSession session, @RequestBody Map<String, String> requestBody) {
         String code = requestBody.get("code");
         if (code == null) {
             logger.error("인가코드 비어있음");
@@ -40,23 +41,23 @@ public class KakaoOauthController {
         logger.info("인가코드: {}", code);
   // code = null 인 경우 체크,
     // 인가 코드를 사용하여 액세스 토큰을 요청합니다.
-        String accessToken = kakaoOauthService.getAccessToken(code);
+        String accessToken = kakaoOauthService.getAccessToken(session, code);
         logger.info("컨테이너 새로 생성된 엑세스토큰: {}", accessToken);
 
         // 액세스 토큰을 사용하여 사용자 정보를 요청하고 결과를 가져옵니다.
-        KakaoUserInfoResponse userInfo = kakaoOauthService.getUserInfo();
+        KakaoUserInfoResponse userInfo = kakaoOauthService.getUserInfo(session);
         logger.info("컨테이너 사용자정보: {}", userInfo);
 
         // 사용자정보로 jwt 토큰, refresh 토큰 생성, 사용자정보 저장 요청
-        UserService.AuthResult authResult = userService.createUserResult(userInfo);
+        UserService.AuthResult authResult = userService.createUserResult(userInfo, accessToken);
 
         String email = userInfo.getEmail(); // 사용자 이메일을 추출하여 변수에 저장 //  -> 삭제
         logger.info("컨테이너 계정 이메일: {}", email);
 
-        String jwtTokenTest = jwtTokenProvider.createJwtToken(email);   //    -> 삭제
+        String jwtTokenTest = jwtTokenProvider.createJwtToken(email, accessToken);   //    -> 삭제
         logger.info("컨테이너 jwt 토큰: {}", jwtTokenTest);
 
-        String refreshTokenTest = jwtTokenProvider.createRefreshToken(email);   //    -> 삭제
+        String refreshTokenTest = jwtTokenProvider.createRefreshToken(jwtTokenTest);   //    -> 삭제
         logger.info("컨테이너 refresh 토큰: {}", refreshTokenTest);
 
         // AuthResult 객체에서 jwtToken과 isNewUser 값을 추출

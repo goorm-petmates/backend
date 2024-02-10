@@ -12,8 +12,9 @@ import org.slf4j.LoggerFactory;
 
 public class KakaoUserInfoResponse {
     private static final Logger logger = LoggerFactory.getLogger(KakaoOauthController.class);
-    @JsonProperty("id")
-    private Long id; // 사용자의 고유 ID
+    @Getter
+    @JsonProperty("kakaoId")
+    private Long kakaoId; // 사용자의 고유 ID
 
     @JsonProperty("connected_at")
     private String connectedAt; // 사용자가 카카오와 연결된 시간
@@ -59,7 +60,7 @@ public class KakaoUserInfoResponse {
 
         @Setter
         @Getter
-        private Long id;
+        private Long kakaoId;
 
         @Setter
         @Getter
@@ -108,6 +109,10 @@ public class KakaoUserInfoResponse {
     // Getters and Setters for KakaoUserInfoResponse
 
     // 카카오 API 응답에서 'kakao_account' JSON 객체를 kakaoAccount 필드에 매핑
+    @JsonProperty("kakaoId")
+    public void setKakaoId(Long kakaoId) {
+        this.kakaoId = kakaoId;
+    }
     @JsonProperty("kakao_account")
     public void setKakaoAccount(KakaoAccount kakaoAccount) {
         this.kakaoAccount = kakaoAccount;
@@ -148,7 +153,7 @@ public class KakaoUserInfoResponse {
         try {
             return mapper.writeValueAsString(this);     // 객체를 JSON 문자열로 변환합니다.
         } catch (JsonProcessingException e) {
-            return "KakaoUserInfoResponse{id=" + id + "}";      // JSON 변환 실패 시 기본 문자열을 반환합니다.
+            return "KakaoUserInfoResponse{id=" + kakaoId + "}";      // JSON 변환 실패 시 기본 문자열을 반환합니다.
         }
     }
 }

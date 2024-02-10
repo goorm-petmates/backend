@@ -24,6 +24,7 @@ public class UserCheckService {
 
         // 사용자 정보를 업데이트하거나 설정합니다.
         user.setEmail(email);
+        user.setKakaoId(userInfo.getKakaoId());
         user.setNickname(userInfo.getNickname());
         user.setProfileImage(userInfo.getProfileImage());
         user.setRefreshToken(refreshToken);
