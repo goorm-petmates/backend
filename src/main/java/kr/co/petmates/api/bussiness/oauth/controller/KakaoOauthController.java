@@ -45,13 +45,13 @@ public class KakaoOauthController {
 
         // 사용자정보로 jwt 토큰, refresh 토큰 생성, 사용자정보 저장 요청
         UserService.AuthResult authResult = userService.createUserResult(userInfo);
-        Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("jwtToken", authResult.getJwtToken());
-        responseBody.put("refreshToken", authResult.getRefreshToken());
-        responseBody.put("isNewUser", authResult.isNewUser());
+        Map<String, Object> response = new HashMap<>();
+        response.put("jwtToken", authResult.getJwtToken());
+        response.put("refreshToken", authResult.getRefreshToken());
+        response.put("isNewUser", authResult.isNewUser());
 
         // 여기서 responseBody를 ResponseEntity에 담아 반환하되, 변수명을 responseLogin으로 사용하고 싶은 의도를 반영
-        ResponseEntity<Map<String, Object>> responseLogin = ResponseEntity.ok(responseBody);
+        ResponseEntity<Map<String, Object>> responseLogin = ResponseEntity.ok(response);
 
         return responseLogin;
     }

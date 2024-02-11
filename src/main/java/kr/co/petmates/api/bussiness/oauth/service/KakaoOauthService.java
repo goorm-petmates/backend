@@ -25,11 +25,13 @@ public class KakaoOauthService {
     public String getAccessToken(HttpSession session, String code) {
         KakaoTokenResponse kakaoTokenResponse = kakaoApiClient.getAccessToken(code);
         String accessToken = kakaoTokenResponse.getAccess_token();
+        String refreshToken = kakaoTokenResponse.getRefresh_token();
         logger.info("KakaoOauthService 카카오api 통해 생선한 엑세스토큰, 반환값: {}", accessToken);
+        logger.info("KakaoOauthService 카카오api 통해 생선한 refreshToken, 반환값: {}", refreshToken);
 
         // 액세스 토큰을 TokenStorage에 저장
 //        accessTokenStorage.setAccessToken2(accessToken);
-        accessTokenStorage.setAccessToken(session, accessToken);
+        accessTokenStorage.setAccessToken(session, accessToken, refreshToken);
 
         String storageAccessToken = accessTokenStorage.getAccessToken(session);
         logger.info("KakaoOauthService 생성후 저장된 엑세스토큰 accessTokenStorage.getAccessToken: {}", storageAccessToken);
