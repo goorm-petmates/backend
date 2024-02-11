@@ -4,7 +4,9 @@ package kr.co.petmates.api.bussiness.oauth.controller;
 import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
+import kr.co.petmates.api.bussiness.oauth.client.KakaoApiClient;
 import kr.co.petmates.api.bussiness.oauth.dto.KakaoUserInfoResponse;
+import kr.co.petmates.api.bussiness.oauth.service.AccessTokenStorage;
 import kr.co.petmates.api.bussiness.oauth.service.KakaoOauthService;
 import kr.co.petmates.api.bussiness.oauth.service.UserService;
 import org.slf4j.Logger;
@@ -23,7 +25,10 @@ public class KakaoOauthController {
     private static final Logger logger = LoggerFactory.getLogger(KakaoOauthController.class);
     @Autowired // 스프링의 의존성 주입 기능을 사용하여 KakaoOauthService 객체를 자동으로 주입합니다.
     private KakaoOauthService kakaoOauthService;
-
+    @Autowired
+    private KakaoApiClient kakaoApiClient;
+    @Autowired
+    private AccessTokenStorage accessTokenStorage;
     @Autowired // UserService 객체를 자동으로 주입합니다.
     private UserService userService;
 
@@ -50,9 +55,44 @@ public class KakaoOauthController {
         response.put("refreshToken", authResult.getRefreshToken());
         response.put("isNewUser", authResult.isNewUser());
 
-        // 여기서 responseBody를 ResponseEntity에 담아 반환하되, 변수명을 responseLogin으로 사용하고 싶은 의도를 반영
-        ResponseEntity<Map<String, Object>> responseLogin = ResponseEntity.ok(response);
+        return ResponseEntity.ok(response);
+    }
 
-        return responseLogin;
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpSession session) {
+
+        boolean isKakaoLogout = kakaoApiClient.kakaoLogout(session);
+        logger.info("로그아웃 성공 여부: {}", isKakaoLogout);
+
+        if (isKakaoLogout) {
+            session.invalidate();
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("result", "success");
+            return ResponseEntity.ok(response);
+        } else {
+            Map<String, Object> response = new HashMap<>();
+            response.put("result", "failed");
+            response.put("data","카카오 엑세스토큰 만료");
+            return ResponseEntity.ok(response);
+        }
+    }
+
+    @PostMapping("/logout/update")
+    public ResponseEntity<?> logoutUpdate(HttpSession session) {
+        String accessToken = accessTokenStorage.getAccessToken(session);
+        logger.info("로그아웃 갱신 전 엑세스토큰: {}", accessToken);
+        String refreshToken = accessTokenStorage.getRefreshToken(session);
+        logger.info("로그아웃 갱신 전 리프레시토큰: {}", refreshToken);
+        kakaoApiClient.updateAccessToken(session, refreshToken);
+
+        kakaoApiClient.kakaoLogout(session);
+
+        session.invalidate();
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("result", "success");
+        logger.info("로그아웃 카카오토큰 갱신 return: {}", ResponseEntity.ok(response));
+        return ResponseEntity.ok(response);
     }
 }

@@ -15,15 +15,7 @@ public class TokenCheckService {
             String email = jwtTokenProvider.getEmail(jwtToken);;
             return email;
         } else {
-            return "fail";
+            return "failed";
         }
-        // 리프레시 토큰으로부터 사용자이메일, 엑세스토큰 추출합니다.
-//        String email = jwtTokenProvider.getEmail(jwtToken);
-//        String accessToken = jwtTokenProvider.getAccessToken(jwtToken);
-//        jwtTokenProvider.createRefreshToken(jwtToken);
-
-//        String newJwtToken = jwtTokenProvider.createJwtToken(email);
-//        // 새로운 액세스 토큰을 생성하여 반환합니다.
-//        return newJwtToken;
     }
 }

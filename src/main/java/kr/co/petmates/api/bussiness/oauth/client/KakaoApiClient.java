@@ -83,13 +83,13 @@ public class KakaoApiClient {
         headers.set("Authorization", "Bearer " + accessToken);
 
         // HttpEntity에 헤더만 설정 (body는 null)
-        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+        HttpEntity<String> request = new HttpEntity<>(headers);
 
         // GET 요청 보내기
         ResponseEntity<KakaoUserInfoResponse> response = restTemplate.exchange(
                 kakaoUserInfoEndpoint,
                 HttpMethod.GET,
-                requestEntity,
+                request,
                 KakaoUserInfoResponse.class
         );
 
@@ -108,12 +108,12 @@ public class KakaoApiClient {
         headers.set("Authorization", "Bearer " + accessToken);
 
         // HttpEntity에 헤더 설정 (body는 필요 없으므로 null)
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+        HttpEntity<String> request = new HttpEntity<>(headers);
 
         ResponseEntity<KakaoLogoutResponse> response = restTemplate.exchange(
                 logoutEndpoint,
                 HttpMethod.POST,
-                entity,
+                request,
                 KakaoLogoutResponse.class
         );
 
@@ -138,13 +138,13 @@ public class KakaoApiClient {
         body.add("refresh_token", refreshToken);
 
         // HttpEntity 객체 생성
-        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
 
         // POST 요청 실행
         ResponseEntity<KakaoTokenResponse> response = restTemplate.exchange(
                 kakaoTokenEndpoint,
                 HttpMethod.POST,
-                requestEntity,
+                request,
                 KakaoTokenResponse.class
         );
 

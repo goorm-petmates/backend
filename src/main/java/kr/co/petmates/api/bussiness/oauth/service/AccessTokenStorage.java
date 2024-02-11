@@ -23,11 +23,4 @@ public class AccessTokenStorage {
     public String getRefreshToken(HttpSession session) {
         return (String) session.getAttribute("refreshToken");
     }
-//    public String getAccessToken2() {
-//        return accessToken;
-//    }
-//
-//    public void setAccessToken2(String accessToken) {
-//        this.accessToken = accessToken;
-//    }
 }

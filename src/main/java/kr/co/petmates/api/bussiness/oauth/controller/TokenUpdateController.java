@@ -58,10 +58,8 @@ public class TokenUpdateController {
             response.put("refreshToken", newRefreshToken);
             logger.info("refreshToken 유효성 : false");
         }
-
-        ResponseEntity<?> newToken = ResponseEntity.ok(response);
-        logger.info("최종 토큰: {}", newToken);
+        logger.info("최종 토큰: {}", ResponseEntity.ok(response));
         // newJwtToken 변수를 반환합니다.
-        return newToken;
+        return ResponseEntity.ok(response);
     }
 }
