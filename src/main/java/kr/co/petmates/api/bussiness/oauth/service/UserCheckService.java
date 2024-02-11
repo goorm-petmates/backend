@@ -13,6 +13,10 @@ public class UserCheckService {
 
     // isNewUser 값 반환, 이메일로 데이터베이스 조회
     public boolean isNewUser(String email) {
+//    public boolean isNewUser(String email, String phone) {
+//        boolean emailNotFound = !userRepository.findByEmail(email).isPresent();
+//        boolean phoneNotFound = !userRepository.findByPhone(phone).isPresent();
+//        return emailNotFound && phoneNotFound;
         return !userRepository.findByEmail(email).isPresent();
     }
 
