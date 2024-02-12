@@ -1,6 +1,8 @@
 // KakaoOauthController는 사용자의 인가 코드를 처리하고, JWT 토큰을 생성하여 반환하는 컨트롤러입니다.
 package kr.co.petmates.api.bussiness.oauth.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +35,7 @@ public class KakaoOauthController {
     private UserService userService;
 
     @PostMapping("/login") // "/login" 경로로 POST 요청이 오면 이 메소드를 실행합니다.
-    public ResponseEntity<?> kakaoLogin(HttpSession session, @RequestBody Map<String, String> requestBody) {
+    public ResponseEntity<?> kakaoLogin(HttpServletResponse response, HttpSession session, @RequestBody Map<String, String> requestBody) {
         String code = requestBody.get("code");
         if (code == null) { // 인가코드 null 인 경우
             return ResponseEntity.badRequest().body("Authorization code is missing");
@@ -49,13 +51,35 @@ public class KakaoOauthController {
         logger.info("컨테이너 사용자정보: {}", userInfo);
 
         // 사용자정보로 jwt 토큰, refresh 토큰 생성, 사용자정보 저장 요청
-        UserService.AuthResult authResult = userService.createUserResult(userInfo);
-        Map<String, Object> response = new HashMap<>();
-        response.put("jwtToken", authResult.getJwtToken());
-        response.put("refreshToken", authResult.getRefreshToken());
-        response.put("isNewUser", authResult.isNewUser());
+//        UserService.AuthResult authResult = userService.createUserResult(userInfo);
+//        Map<String, Object> responseBody = new HashMap<>();
+//        responseBody.put("jwtToken", authResult.getJwtToken());
+//        responseBody.put("refreshToken", authResult.getRefreshToken());
+//        responseBody.put("isNewUser", authResult.isNewUser());
 
-        return ResponseEntity.ok(response);
+
+        // 사용자정보로 jwt 토큰, refresh 토큰 생성, 사용자정보 저장 요청
+        UserService.AuthResult authResult = userService.createUserResult(userInfo);
+
+        // JWT 토큰을 세션 쿠키에 저장
+        Cookie jwtTokenCookie = new Cookie("jwtToken", authResult.getJwtToken());
+        jwtTokenCookie.setHttpOnly(true);
+        jwtTokenCookie.setPath("/");
+        jwtTokenCookie.setMaxAge(-1); // 세션 쿠키로 설정하여 브라우저 종료 시 삭제
+        response.addCookie(jwtTokenCookie);
+
+        // 리프레시 토큰을 세션 쿠키에 저장
+        Cookie refreshTokenCookie = new Cookie("refreshToken", authResult.getRefreshToken());
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(-1); // 세션 쿠키로 설정하여 브라우저 종료 시 삭제
+        response.addCookie(refreshTokenCookie);
+
+        // isNewUser 정보는 응답 본문에 포함
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("isNewUser", authResult.isNewUser());
+
+        return ResponseEntity.ok(responseBody);
     }
 
     @PostMapping("/logout")
