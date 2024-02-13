@@ -11,6 +11,7 @@ import java.util.Map;
 import kr.co.petmates.api.bussiness.oauth.client.KakaoApiClient;
 import kr.co.petmates.api.bussiness.oauth.dto.KakaoUserInfoResponse;
 import kr.co.petmates.api.bussiness.oauth.service.AccessTokenStorage;
+import kr.co.petmates.api.bussiness.oauth.service.JwtTokenSaveService;
 import kr.co.petmates.api.bussiness.oauth.service.KakaoOauthService;
 import kr.co.petmates.api.bussiness.oauth.service.UserService;
 import org.slf4j.Logger;
@@ -36,6 +37,8 @@ public class KakaoOauthController {
     private AccessTokenStorage accessTokenStorage;
     @Autowired // UserService 객체를 자동으로 주입합니다.
     private UserService userService;
+    @Autowired
+    private JwtTokenSaveService jwtTokenSaveService;
 
     @PostMapping("/login") // "/login" 경로로 POST 요청이 오면 이 메소드를 실행합니다.
     public ResponseEntity<?> kakaoLogin(HttpServletResponse response, HttpSession session, @RequestBody Map<String, String> requestBody) {
@@ -64,21 +67,22 @@ public class KakaoOauthController {
         // 사용자정보로 jwt 토큰, refresh 토큰 생성, 사용자정보 저장 요청
         UserService.AuthResult authResult = userService.createUserResult(userInfo);
 
-        // JWT 토큰을 세션 쿠키에 저장
-        Cookie jwtTokenCookie = new Cookie("jwtToken", authResult.getJwtToken());
-        jwtTokenCookie.setHttpOnly(true);
-        jwtTokenCookie.setPath("/");
-        jwtTokenCookie.setMaxAge(-1); // 세션 쿠키로 설정하여 브라우저 종료 시 삭제
-        response.addCookie(jwtTokenCookie);
-        logger.info("컨테이너 로그인 jwtTokenCookie: {}", jwtTokenCookie);
+//        // JWT 토큰을 세션 쿠키에 저장
+//        Cookie jwtTokenCookie = new Cookie("jwtToken", authResult.getJwtToken());
+//        jwtTokenCookie.setHttpOnly(true);
+//        jwtTokenCookie.setPath("/");
+//        jwtTokenCookie.setMaxAge(-1); // 세션 쿠키로 설정하여 브라우저 종료 시 삭제
+//        response.addCookie(jwtTokenCookie);
+//        logger.info("컨테이너 로그인 jwtTokenCookie: {}", jwtTokenCookie);
+//
+//        // 리프레시 토큰을 세션 쿠키에 저장
+//        Cookie refreshTokenCookie = new Cookie("refreshToken", authResult.getRefreshToken());
+//        refreshTokenCookie.setHttpOnly(true);
+//        refreshTokenCookie.setPath("/");
+//        refreshTokenCookie.setMaxAge(-1); // 세션 쿠키로 설정하여 브라우저 종료 시 삭제
+//        response.addCookie(refreshTokenCookie);
 
-        // 리프레시 토큰을 세션 쿠키에 저장
-        Cookie refreshTokenCookie = new Cookie("refreshToken", authResult.getRefreshToken());
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(-1); // 세션 쿠키로 설정하여 브라우저 종료 시 삭제
-        response.addCookie(refreshTokenCookie);
-
+        jwtTokenSaveService.saveTokenToCookies(response, authResult);
         // isNewUser 정보는 응답 본문에 포함
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("isNewUser", authResult.isNewUser());
@@ -122,20 +126,20 @@ public class KakaoOauthController {
 
         if (isKakaoLogout) {
             session.invalidate();
-
-            // JWT 토큰이 저장된 쿠키 삭제
-            Cookie jwtTokenCookie = new Cookie("jwtToken", null); // 쿠키 이름에 해당하는 새 쿠키 생성
-            jwtTokenCookie.setPath("/");
-            jwtTokenCookie.setMaxAge(0); // 쿠키의 유효기간을 0으로 설정하여 즉시 만료
-            jwtTokenCookie.setHttpOnly(true); // HttpOnly 설정 유지
-            response.addCookie(jwtTokenCookie); // 응답에 쿠키 추가하여 클라이언트에게 전송
-            logger.info("컨테이너 로그아웃 jwtTokenCookie 삭제?: {}", jwtTokenCookie);
-            // refresh 토큰이 저장된 쿠키 삭제
-            Cookie refreshTokenCookie = new Cookie("refreshToken", null); // 쿠키 이름에 해당하는 새 쿠키 생성
-            refreshTokenCookie.setPath("/");
-            refreshTokenCookie.setMaxAge(0); // 쿠키의 유효기간을 0으로 설정하여 즉시 만료
-            refreshTokenCookie.setHttpOnly(true); // HttpOnly 설정 유지
-            response.addCookie(refreshTokenCookie); // 응답에 쿠키 추가하여 클라이언트에게 전송
+            jwtTokenSaveService.deleteTokenToCookies(response);
+//            // JWT 토큰이 저장된 쿠키 삭제
+//            Cookie jwtTokenCookie = new Cookie("jwtToken", null); // 쿠키 이름에 해당하는 새 쿠키 생성
+//            jwtTokenCookie.setPath("/");
+//            jwtTokenCookie.setMaxAge(0); // 쿠키의 유효기간을 0으로 설정하여 즉시 만료
+//            jwtTokenCookie.setHttpOnly(true); // HttpOnly 설정 유지
+//            response.addCookie(jwtTokenCookie); // 응답에 쿠키 추가하여 클라이언트에게 전송
+//            logger.info("컨테이너 로그아웃 jwtTokenCookie 삭제?: {}", jwtTokenCookie);
+//            // refresh 토큰이 저장된 쿠키 삭제
+//            Cookie refreshTokenCookie = new Cookie("refreshToken", null); // 쿠키 이름에 해당하는 새 쿠키 생성
+//            refreshTokenCookie.setPath("/");
+//            refreshTokenCookie.setMaxAge(0); // 쿠키의 유효기간을 0으로 설정하여 즉시 만료
+//            refreshTokenCookie.setHttpOnly(true); // HttpOnly 설정 유지
+//            response.addCookie(refreshTokenCookie); // 응답에 쿠키 추가하여 클라이언트에게 전송
 
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("result", "success");
