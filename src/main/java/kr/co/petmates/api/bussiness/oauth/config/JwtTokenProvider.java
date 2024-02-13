@@ -13,18 +13,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-@Component // 이 클래스를 스프링 빈으로 등록합니다.
+@Component
 public class JwtTokenProvider {
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
     SecretKey secretKey = SecretKeySingleton.getSecretKeyInstance();
-//    SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256); // 안전한 키 생성
 
     public String createJwtToken(String email) {
-        logger.info("(jwtTokenProvider): 사용자 이메일={}", email);
-
         Date now = new Date();
         Date validity = new Date(now.getTime() + 6 * 60 * 60 * 1000); // 6 hours
 
+        // 이메일 정보 포함
         String jwtToken = Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(now)
@@ -38,18 +36,19 @@ public class JwtTokenProvider {
     }
 
     public String createRefreshToken(String jwtToken) {
-        // 기존 토큰에서 정보 추출
+        // 기존 토큰에서 이메일 추출
         Claims claims = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(jwtToken)
                 .getBody();
         String email = claims.getSubject();
 
-        logger.info("(jwtTokenProvider): 사용자 이메일={}", email);
+        logger.info("(jwtTokenProvider): 사용자 이메일 추출={}", email);
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + 30L * 24 * 60 * 60 * 1000); // 30 days
 
+        // 이메일 정보 포함
         String refreshToken = Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(now)

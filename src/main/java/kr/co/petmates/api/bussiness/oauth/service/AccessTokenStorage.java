@@ -5,9 +5,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AccessTokenStorage {
-    private String accessToken; // 액세스 토큰을 저장할 변수
-
-
     // 사용자의 세션에 액세스 토큰 저장
     public void setAccessToken(HttpSession session, String accessToken, String refreshToken) {
         session.setAttribute("accessToken", accessToken);

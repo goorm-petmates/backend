@@ -51,7 +51,7 @@ public class KakaoApiClient {
         this.restTemplate = new RestTemplate();
     }
 
-    // 인가코드로 엑세스토큰 요청하기
+    // 카카오서버에 인가코드로 엑세스토큰 요청하기
     public KakaoTokenResponse getAccessToken(String code) {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
@@ -75,14 +75,13 @@ public class KakaoApiClient {
         return response.getBody();
     }
 
-    // 엑세스토큰으로 사용자정보 요청하기
+    // 카카오서버에 엑세스토큰으로 사용자정보 요청하기
     public KakaoUserInfoResponse getUserInfo(String accessToken) {
         RestTemplate restTemplate = new RestTemplate();
-        // 헤더 설정
+
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + accessToken);
 
-        // HttpEntity에 헤더만 설정 (body는 null)
         HttpEntity<String> request = new HttpEntity<>(headers);
 
         // GET 요청 보내기
@@ -99,15 +98,14 @@ public class KakaoApiClient {
         return userInfo;
     }
 
-    // 카카오로그아웃 요청
+    // 카카오서버에 카카오로그아웃 요청
     public boolean kakaoLogout(HttpSession session) {
-        String accessToken = accessTokenStorage.getAccessToken(session);
-        // 헤더 설정
+        String accessToken = accessTokenStorage.getAccessToken(session);   // 세션에 저장된 엑세스토큰 추출
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.set("Authorization", "Bearer " + accessToken);
 
-        // HttpEntity에 헤더 설정 (body는 필요 없으므로 null)
         HttpEntity<String> request = new HttpEntity<>(headers);
 
         ResponseEntity<KakaoLogoutResponse> response = restTemplate.exchange(
@@ -117,27 +115,25 @@ public class KakaoApiClient {
                 KakaoLogoutResponse.class
         );
 
-        if (response.getStatusCode() == HttpStatus.OK) {   // 상태 코드가 200 OK인 경우, 요청이 성공적으로 처리되었다고 간주합니다.
+        if (response.getStatusCode() == HttpStatus.OK) {   // 상태 코드가 200 OK인 경우, 요청 성공
             logger.info("로그아웃 성공 true 반환");
             return true;
-        } else {    // 그 외의 경우, 요청 처리가 실패했다고 간주합니다.
+        } else {    // 그 외의 경우, 요청 처리 실패
             logger.info("로그아웃 실패 false 반환");
             return false;
         }
     }
 
+    // 카카오서버에 엑세스토큰 갱신 요청
     public void updateAccessToken(HttpSession session, String refreshToken) {
-        // 요청 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        // 요청 본문(body) 설정
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "refresh_token");
         body.add("client_id", clientId);
         body.add("refresh_token", refreshToken);
 
-        // HttpEntity 객체 생성
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
 
         // POST 요청 실행
@@ -153,6 +149,5 @@ public class KakaoApiClient {
         logger.info("로그아웃 갱신 후 엑세스토큰: {}", newAccessToken);
         logger.info("로그아웃 갱신 후 리프레시토큰: {}", newRefreshToken);
         accessTokenStorage.setAccessToken(session, newAccessToken, newRefreshToken);
-//        return newAccessToken, newRefreshToken;
     }
 }
