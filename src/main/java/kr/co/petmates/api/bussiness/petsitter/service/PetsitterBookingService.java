@@ -40,42 +40,31 @@ public class PetsitterBookingService {
             return bookingDto;
         });
     }
+
     // 예약 승인 (BOOK_REQUEST -> BOOK_APPROVED)
-    @Transactional
-    public Map<String, String> approveBooking(Long bookingId) throws Exception {
-        Booking booking = petsitterBookingRepository.findById(bookingId)
-                .orElseThrow(() -> new Exception(UserInterfaceMsg.ERR_NOT_EXIST_RESERVED.getValue()));
-
-        Map<String, String> result = new HashMap<>();
-
-        if (booking.getStatus() == BookingStatus.BOOK_REQUEST) {
-            booking.setStatus(BookingStatus.BOOK_APPROVED);
-            petsitterBookingRepository.save(booking);
-            result.put("result", "success");
-            result.put("status", BookingStatus.BOOK_APPROVED.name());
-        } else {
-            // 예약 상태가 BOOK_REQUEST가 아닐 경우, 상태 변경을 시도하지 않고 결과를 반환
-            result.put("result", "failed");
-            result.put("status", booking.getStatus().name());
-        }
-
-        return result;
+    public Map<String, String> approveBooking(Long bookingId) {
+        return changeBookingStatus(bookingId, BookingStatus.BOOK_APPROVED);
     }
 
     // 예약 거절 (BOOK_REQUEST -> BOOK_REFUSED)
+    public Map<String, String> refuseBooking(Long bookingId) {
+        return changeBookingStatus(bookingId, BookingStatus.BOOK_REFUSED);
+    }
+
     @Transactional
-    public Map<String, String> refuseBooking(Long bookingId) throws Exception {
+    public Map<String, String> changeBookingStatus(Long bookingId, BookingStatus newStatus) {
         Booking booking = petsitterBookingRepository.findById(bookingId)
-                .orElseThrow(() -> new Exception(UserInterfaceMsg.ERR_NOT_EXIST_RESERVED.getValue()));
+                .orElseThrow(() -> new IllegalStateException(UserInterfaceMsg.ERR_NOT_EXIST_RESERVED.getValue()));
 
         Map<String, String> result = new HashMap<>();
 
         if (booking.getStatus() == BookingStatus.BOOK_REQUEST) {
-            booking.setStatus(BookingStatus.BOOK_REFUSED);
+            booking.setStatus(newStatus);
             petsitterBookingRepository.save(booking);
             result.put("result", "success");
-            result.put("status", BookingStatus.BOOK_REFUSED.name());
+            result.put("status", newStatus.name());
         } else {
+            // 예약 상태가 BOOK_REQUEST가 아닐 경우, 상태 변경을 시도하지 않고 결과를 반환
             result.put("result", "failed");
             result.put("status", booking.getStatus().name());
         }
