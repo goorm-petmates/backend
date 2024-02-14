@@ -3,7 +3,6 @@ package kr.co.petmates.api.bussiness.petsitter.controller;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 import kr.co.petmates.api.bussiness.petsitter.service.PetsitterBookingService;
 import kr.co.petmates.api.bussiness.reserve.dto.BookingDto;
 import kr.co.petmates.api.enums.BookingStatus;
@@ -28,8 +27,8 @@ public class PetsitterBookingController {
     @GetMapping("/reserve/{petsitterId}")
     public ResponseEntity<?> getBookingRequests(
             @PathVariable("petsitterId") Long petsitterId,
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "3") int size) {
+            @RequestParam(value = "page", defaultValue = "0") int page, // 기본 페이지는 첫 번째 페이지
+            @RequestParam(value = "size", defaultValue = "3") int size) { // 각 페이지 당 3개의 항목
 
         List<BookingStatus> requestStatuses = List.of(
                 BookingStatus.BOOK_REQUEST,
@@ -38,70 +37,47 @@ public class PetsitterBookingController {
                 BookingStatus.BOOK_COMPLETE
         );
 
-        return getBookingRequestsByStatus(petsitterId, requestStatuses, page, size);
-    }
-
-    // 펫시터의 예약 취소 리스트 조회 -> BOOK_REFUSED, BOOK_CANCELED, BOOK_REFUND 에 해당하는 예약들을 조회
-    @GetMapping("/cancel/{petsitterId}")
-    public ResponseEntity<?> getCanceledBooking(
-            @PathVariable("petsitterId") Long petsitterId,
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "3") int size) {
-
-        List<BookingStatus> CanceledStatuses = List.of(
-                BookingStatus.BOOK_REFUSED,
-                BookingStatus.BOOK_CANCELED,
-                BookingStatus.BOOK_REFUND
-        );
-
-        return getBookingRequestsByStatus(petsitterId, CanceledStatuses, page, size);
-    }
-    // 예약 요청 및 취소 리스트 조회를 위한 공통 조회 로직 메서드 구현
-    private ResponseEntity<?> getBookingRequestsByStatus(
-            Long petsitterId,
-            List<BookingStatus> statuses,
-            int page,
-            int size) {
-
         Page<BookingDto> bookingRequests = petsitterBookingService.findBookingRequestsByPetsitterId(
                 petsitterId,
-                statuses,
+                requestStatuses,
                 PageRequest.of(page, size, Sort.by("regDate").descending())
         );
 
         Map<String, Object> response = new HashMap<>();
         response.put("result", "success");
-        response.put("totalContents", bookingRequests.getTotalElements());
-        response.put("pageTotalCnt", bookingRequests.getTotalPages());
-        response.put("pageNum", bookingRequests.getNumber());
-        response.put("data", bookingRequests.getContent());
+        response.put("totalContents", bookingRequests.getTotalElements()); // 전체 데이터의 수
+        response.put("pageTotalCnt", bookingRequests.getTotalPages()); // 총 페이지 수
+        response.put("pageNum", bookingRequests.getNumber()); // 현재 페이지 번호
+        response.put("data", bookingRequests.getContent()); // 현재 페이지 데이터 리스트
         response.put("offset", PageRequest.of(page, size, Sort.by("regAt").descending()).getOffset());
 
         return ResponseEntity.ok(response);
     }
 
-
     // 예약 승인 (BOOK_REQUEST -> BOOK_APPROVED)
     @PostMapping("/approve/{bookingId}")
     public ResponseEntity<?> approveBooking(@PathVariable("bookingId") Long bookingId) {
-        return handleBookingOperation(bookingId, petsitterBookingService::approveBooking);
+        try {
+            Map<String, String> response = petsitterBookingService.approveBooking(bookingId);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("result", "failed");
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
     }
 
     // 예약 거절 (BOOK_REQUEST -> BOOK_REFUSED)
     @PostMapping("/refuse/{bookingId}")
     public ResponseEntity<?> refuseBooking(@PathVariable("bookingId") Long bookingId) {
-        return handleBookingOperation(bookingId, petsitterBookingService::refuseBooking);
-    }
-
-    // 예약 승인 및 거절을 위한 공통 메소드
-    private ResponseEntity<?> handleBookingOperation(Long bookingId, Function<Long, Map<String, String>> operation) {
         try {
-            Map<String, String> response = operation.apply(bookingId);
+            Map<String, String> response = petsitterBookingService.refuseBooking(bookingId);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("result", "failed");
-            errorResponse.put("reason", e.getMessage());
+            errorResponse.put("error", e.getMessage());
             return ResponseEntity.badRequest().body(errorResponse);
         }
     }
