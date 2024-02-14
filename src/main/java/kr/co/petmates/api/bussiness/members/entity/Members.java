@@ -40,7 +40,7 @@ public class Members extends BaseDateTimeEntity implements Serializable {
 
     private Long kakaoId;
 
-//    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String email; // 카카오에서 카카오계정(email)으로 제공받은 이메일 저장
 
     @Column(nullable = false, length = 255)

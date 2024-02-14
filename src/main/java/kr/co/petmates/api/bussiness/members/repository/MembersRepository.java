@@ -7,5 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface MembersRepository extends JpaRepository<Members, Long> {
 //    @EntityGraph(attributePaths = "authorities")
     Optional<Members> findByEmail(String email);
+    Optional<Members> findByPhone(String phone);
 //    Optional<Members> findOneWithAuthoritiesByEmail(String email);
 }

@@ -8,7 +8,11 @@ import jakarta.servlet.http.HttpSession;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import kr.co.petmates.api.bussiness.members.entity.Members;
+import kr.co.petmates.api.bussiness.members.repository.MembersRepository;
 import kr.co.petmates.api.bussiness.oauth.client.KakaoApiClient;
+import kr.co.petmates.api.bussiness.oauth.config.JwtTokenProvider;
 import kr.co.petmates.api.bussiness.oauth.dto.KakaoUserInfoResponse;
 import kr.co.petmates.api.bussiness.oauth.service.AccessTokenStorage;
 import kr.co.petmates.api.bussiness.oauth.service.JwtTokenSaveService;
@@ -39,6 +43,10 @@ public class KakaoOauthController {
     private UserService userService;
     @Autowired
     private JwtTokenSaveService jwtTokenSaveService;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+    @Autowired
+    private MembersRepository membersRepository;
 
     @PostMapping("/login")   // 로그인 요청
     public ResponseEntity<?> kakaoLogin(HttpServletResponse response, HttpSession session, @RequestBody Map<String, String> requestBody) {
@@ -80,7 +88,16 @@ public class KakaoOauthController {
             for (Cookie cookie : cookies) {    // "jwtToken" 쿠키를 찾아 값이 비어있지 않은지 확인
                 if ("jwtToken".equals(cookie.getName()) && cookie.getValue() != null && !cookie.getValue().isEmpty()) {
                     logger.info("컨테이너 쿠키 JwtToken 있음");
-                    return true;
+                    String jwtToken = cookie.getValue();
+                    String email = jwtTokenProvider.getEmail(jwtToken);
+                    Optional<Members> memberOptional = membersRepository.findByEmail(email);
+                    if (memberOptional.isPresent()) {
+                        Members member = memberOptional.get();
+                        boolean isNewUser = (member.getPhone() != null);
+                        logger.info("컨테이너 로그인 상태 isNewUser: {}", isNewUser);
+                        // phone 데이터가 null이면 어떤 경우라도 true 반환
+                        return member.getPhone() != null;
+                    }
                 }
             }
         }
