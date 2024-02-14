@@ -1,11 +1,14 @@
 package kr.co.petmates.api.bussiness.petsitter.service;
 
+import java.util.HashMap;
+import java.util.Map;
 import kr.co.petmates.api.bussiness.pet.entity.BookedPet;
 import kr.co.petmates.api.bussiness.pet.entity.Pet;
 import kr.co.petmates.api.bussiness.petsitter.repository.PetsitterBookingRepository;
 import kr.co.petmates.api.bussiness.reserve.dto.BookingDto;
 import kr.co.petmates.api.bussiness.reserve.entity.Booking;
 import kr.co.petmates.api.enums.BookingStatus;
+import kr.co.petmates.api.enums.UserInterfaceMsg;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,5 +39,47 @@ public class PetsitterBookingService {
 
             return bookingDto;
         });
+    }
+    // 예약 승인 (BOOK_REQUEST -> BOOK_APPROVED)
+    @Transactional
+    public Map<String, String> approveBooking(Long bookingId) throws Exception {
+        Booking booking = petsitterBookingRepository.findById(bookingId)
+                .orElseThrow(() -> new Exception(UserInterfaceMsg.ERR_NOT_EXIST_RESERVED.getValue()));
+
+        Map<String, String> result = new HashMap<>();
+
+        if (booking.getStatus() == BookingStatus.BOOK_REQUEST) {
+            booking.setStatus(BookingStatus.BOOK_APPROVED);
+            petsitterBookingRepository.save(booking);
+            result.put("result", "success");
+            result.put("status", BookingStatus.BOOK_APPROVED.name());
+        } else {
+            // 예약 상태가 BOOK_REQUEST가 아닐 경우, 상태 변경을 시도하지 않고 결과를 반환
+            result.put("result", "failed");
+            result.put("status", booking.getStatus().name());
+        }
+
+        return result;
+    }
+
+    // 예약 거절 (BOOK_REQUEST -> BOOK_REFUSED)
+    @Transactional
+    public Map<String, String> refuseBooking(Long bookingId) throws Exception {
+        Booking booking = petsitterBookingRepository.findById(bookingId)
+                .orElseThrow(() -> new Exception(UserInterfaceMsg.ERR_NOT_EXIST_RESERVED.getValue()));
+
+        Map<String, String> result = new HashMap<>();
+
+        if (booking.getStatus() == BookingStatus.BOOK_REQUEST) {
+            booking.setStatus(BookingStatus.BOOK_REFUSED);
+            petsitterBookingRepository.save(booking);
+            result.put("result", "success");
+            result.put("status", BookingStatus.BOOK_REFUSED.name());
+        } else {
+            result.put("result", "failed");
+            result.put("status", booking.getStatus().name());
+        }
+
+        return result;
     }
 }

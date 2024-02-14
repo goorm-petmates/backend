@@ -13,17 +13,18 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 @RestController
-@RequestMapping("/api/my-page")
+@RequestMapping("/api/my-page/petsitter")
 @RequiredArgsConstructor
 public class PetsitterBookingController {
     private final PetsitterBookingService petsitterBookingService;
 
     // 펫시터의 예약 요청 리스트 조회 -> BOOK_REQUEST, BOOK_APPROVED, BOOK_SUCCESS, BOOK_COMPLETE 에 해당하는 예약들을 조회
-    @GetMapping("/petsitter/reserve/{petsitterId}")
+    @GetMapping("/reserve/{petsitterId}")
     public ResponseEntity<?> getBookingRequests(
             @PathVariable("petsitterId") Long petsitterId,
             @RequestParam(value = "page", defaultValue = "0") int page, // 기본 페이지는 첫 번째 페이지
@@ -51,5 +52,33 @@ public class PetsitterBookingController {
         response.put("offset", PageRequest.of(page, size, Sort.by("regAt").descending()).getOffset());
 
         return ResponseEntity.ok(response);
+    }
+
+    // 예약 승인 (BOOK_REQUEST -> BOOK_APPROVED)
+    @PostMapping("/approve/{bookingId}")
+    public ResponseEntity<?> approveBooking(@PathVariable("bookingId") Long bookingId) {
+        try {
+            Map<String, String> response = petsitterBookingService.approveBooking(bookingId);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("result", "failed");
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+
+    // 예약 거절 (BOOK_REQUEST -> BOOK_REFUSED)
+    @PostMapping("/refuse/{bookingId}")
+    public ResponseEntity<?> refuseBooking(@PathVariable("bookingId") Long bookingId) {
+        try {
+            Map<String, String> response = petsitterBookingService.refuseBooking(bookingId);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("result", "failed");
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
     }
 }
