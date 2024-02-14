@@ -101,6 +101,6 @@ public class Pet extends BaseDateTimeEntity implements Serializable {
 
     // 펫과 '예약된 펫' 연결
     @OneToMany(mappedBy = "pet", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<BookedPet> bookedPets = new HashSet<>();
+    private Set<BookedPet> bookedPet = new HashSet<>();
 }
 
