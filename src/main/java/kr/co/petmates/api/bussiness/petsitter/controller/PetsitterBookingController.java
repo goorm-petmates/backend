@@ -3,6 +3,7 @@ package kr.co.petmates.api.bussiness.petsitter.controller;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import kr.co.petmates.api.bussiness.petsitter.service.PetsitterBookingService;
 import kr.co.petmates.api.bussiness.reserve.dto.BookingDto;
 import kr.co.petmates.api.enums.BookingStatus;
@@ -57,27 +58,22 @@ public class PetsitterBookingController {
     // 예약 승인 (BOOK_REQUEST -> BOOK_APPROVED)
     @PostMapping("/approve/{bookingId}")
     public ResponseEntity<?> approveBooking(@PathVariable("bookingId") Long bookingId) {
-        try {
-            Map<String, String> response = petsitterBookingService.approveBooking(bookingId);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("result", "failed");
-            errorResponse.put("error", e.getMessage());
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
+        return handleBookingOperation(bookingId, petsitterBookingService::approveBooking);
     }
 
     // 예약 거절 (BOOK_REQUEST -> BOOK_REFUSED)
     @PostMapping("/refuse/{bookingId}")
     public ResponseEntity<?> refuseBooking(@PathVariable("bookingId") Long bookingId) {
+        return handleBookingOperation(bookingId, petsitterBookingService::refuseBooking);
+    }
+    private ResponseEntity<?> handleBookingOperation(Long bookingId, Function<Long, Map<String, String>> operation) {
         try {
-            Map<String, String> response = petsitterBookingService.refuseBooking(bookingId);
+            Map<String, String> response = operation.apply(bookingId);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("result", "failed");
-            errorResponse.put("error", e.getMessage());
+            errorResponse.put("reason", e.getMessage());
             return ResponseEntity.badRequest().body(errorResponse);
         }
     }
