@@ -43,12 +43,10 @@ public class Members extends BaseDateTimeEntity implements Serializable {
     @Column(nullable = false, unique = true)
     private String email; // 카카오에서 카카오계정(email)으로 제공받은 이메일 저장
 
-    @Column(nullable = false, length = 255)
+    @Column(length = 255)
     private String nickname; // 카카오에서 닉네임(nickname)으로 제공받은 이름 저장
 
     private String profileImage;
-
-//    private String refreshToken;
 
     @Column(length = 16)
     private String phone; // 휴대폰 번호
@@ -56,17 +54,17 @@ public class Members extends BaseDateTimeEntity implements Serializable {
     @Column(length = 8)
     private String zipcode; // 우편번호
 
-//    @Column(nullable = false, length = 512)
+    @Column(length = 512)
     private String roadAddr; // 도로명 주소
 
     @Column(length = 512)
     private String detailAddr; // 나머지 주소
 
-    @Column(length = 20)
-    private String latitude; // 위도
+    @Column(length = 512)
+    private Double latitude; // 위도
 
-    @Column(length = 20)
-    private String longitude; // 경도
+    @Column(length = 512)
+    private Double longitude; // 경도
 
     @Column(name = "last_login_at", nullable = true, columnDefinition = "TIMESTAMP")
     @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")

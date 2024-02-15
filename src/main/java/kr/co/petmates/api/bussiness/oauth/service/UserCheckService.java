@@ -27,23 +27,24 @@ public class UserCheckService {
         return true;
     }
 
-//        boolean emailNotFound = !membersRepository.findByEmail(email).isPresent();
-//        boolean phoneNotFound = !membersRepository.findByPhone(phone).isPresent();
-//        return emailNotFound && phoneNotFound;
-//        return !membersRepository.findByEmail(email).isPresent();
-//    }
-
     // 사용자 존재 여부를 확인하고 업데이트하거나 새로 저장
     @Transactional
-    public void saveOrUpdateUser(KakaoUserInfoResponse userInfo) {
+    public void saveOrUpdateUser(KakaoUserInfoResponse userInfo, boolean isNewUser) {
         String email = userInfo.getEmail();
         Members members = membersRepository.findByEmail(email)
                 .orElseGet(Members::new); // 기존 사용자가 없을 경우 새 Members 객체 생성
 
+        String nickname = userInfo.getNickname();
+        boolean isNicknameDuplicate;
+        if (isNewUser) {
+            // 닉네임 중복 확인
+            isNicknameDuplicate = membersRepository.findByNickname(nickname).isPresent();
+            members.setNickname(isNicknameDuplicate ? null : nickname);
+        }
+
         // 사용자 정보를 업데이트하거나 설정합니다.
         members.setEmail(email);
         members.setKakaoId(userInfo.getKakaoId());
-        members.setNickname(userInfo.getNickname());
         members.setProfileImage(userInfo.getProfileImage());
         members.setIsWithdrawn(false);
         members.setLastLoginDate(LocalDateTime.now());

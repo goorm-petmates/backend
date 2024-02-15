@@ -2,6 +2,10 @@ package kr.co.petmates.api.bussiness.members.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import kr.co.petmates.api.bussiness.members.dto.MembersDTO;
 import kr.co.petmates.api.bussiness.members.entity.Members;
 import kr.co.petmates.api.bussiness.members.repository.MembersRepository;
 import kr.co.petmates.api.bussiness.members.service.MembersService;
@@ -58,8 +62,52 @@ public class MembersController {
 
     // 추가 정보 저장
     @PostMapping("/join/save")
-    public ResponseEntity<Members> saveMember(@RequestBody Members member) {
+    public ResponseEntity<?> saveMember(@RequestBody MembersDTO membersDTO) {
+        Optional<Members> existingMember = membersRepository.findByEmail(membersDTO.getEmail());
+
+        if (!existingMember.isPresent()) {
+            // 회원이 존재하지 않는 경우, 에러 처리 또는 새로운 회원 등록 로직을 구현
+            Map<String, String> responseBody = new HashMap<>();
+            responseBody.put("result", "failed");
+            responseBody.put("data", "이메일이 유효하지 않습니다. 카카오로그인부터 다시 시도해주세요.");
+            return ResponseEntity.ok().body(responseBody);
+        }
+
+        Members member = existingMember.get();
+        logger.info("회원가입(save) 전달받은 이메일: {}", membersDTO.getEmail());
+        logger.info("회원가입(save) 전달받은 닉네임: {}", membersDTO.getNickname());
+
+        if (membersDTO.getNickname() != null) {
+            member.setNickname(membersDTO.getNickname());
+        }
+
+        member.setPhone(membersDTO.getPhone());
+        member.setRoadAddr(membersDTO.getRoadAddr());
+        member.setDetailAddr(membersDTO.getDetailAddr());
+        member.setLatitude(membersDTO.getLatitude());
+        member.setLongitude(membersDTO.getLongitude());
+        member.setZipcode(membersDTO.getZipcode());
+
         membersRepository.save(member);
-        return ResponseEntity.ok().build();
+
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("result", "success");
+        responseBody.put("data", "회원가입에 성공했습니다 :)");
+        return ResponseEntity.ok().body(responseBody);
+    }
+
+    @PostMapping("/join/doublecheck")
+    public ResponseEntity<?> doubleCheckNickname(@RequestBody String nickname) {
+        boolean isNicknameDuplicate = membersRepository.findByNickname(nickname).isPresent();
+
+        if (isNicknameDuplicate) {
+            Map<String, String> responseBody = new HashMap<>();
+            responseBody.put("result", "failed");
+            return ResponseEntity.ok().body(responseBody);
+        } else {
+            Map<String, String> responseBody = new HashMap<>();
+            responseBody.put("result", "success");
+            return ResponseEntity.ok().body(responseBody);
+        }
     }
 }

@@ -37,7 +37,7 @@ public class UserService {
         jwtTokenSaveService.saveTokenToCookies(jwtToken, refreshToken, response);
 
         // 사용자 저장 또는 업데이트
-        userCheckService.saveOrUpdateUser(userInfo);
+        userCheckService.saveOrUpdateUser(userInfo, isNewUser);
         return new AuthResult(jwtToken, refreshToken, isNewUser);
     }
 

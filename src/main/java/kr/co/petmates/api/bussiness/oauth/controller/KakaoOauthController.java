@@ -18,9 +18,9 @@ import kr.co.petmates.api.bussiness.oauth.service.AccessTokenStorage;
 import kr.co.petmates.api.bussiness.oauth.service.JwtTokenSaveService;
 import kr.co.petmates.api.bussiness.oauth.service.KakaoOauthService;
 import kr.co.petmates.api.bussiness.oauth.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,24 +29,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/kakao")
 public class KakaoOauthController {
 
     private static final Logger logger = LoggerFactory.getLogger(KakaoOauthController.class);
-    @Autowired
-    private KakaoOauthService kakaoOauthService;
-    @Autowired
-    private KakaoApiClient kakaoApiClient;
-    @Autowired
-    private AccessTokenStorage accessTokenStorage;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private JwtTokenSaveService jwtTokenSaveService;
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
-    @Autowired
-    private MembersRepository membersRepository;
+    private final KakaoOauthService kakaoOauthService;
+    private final KakaoApiClient kakaoApiClient;
+    private final AccessTokenStorage accessTokenStorage;
+    private final UserService userService;
+    private final JwtTokenSaveService jwtTokenSaveService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final MembersRepository membersRepository;
 
     @PostMapping("/login")   // 로그인 요청
     public ResponseEntity<?> kakaoLogin(HttpServletResponse response, HttpSession session, @RequestBody Map<String, String> requestBody) {
@@ -117,6 +111,7 @@ public class KakaoOauthController {
 
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("result", "success");
+            responseBody.put("data","로그아웃 성공");
             return ResponseEntity.ok(responseBody);
         } else {
             Map<String, Object> responseBody = new HashMap<>();
