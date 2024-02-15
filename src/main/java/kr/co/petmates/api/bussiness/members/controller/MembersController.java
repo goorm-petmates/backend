@@ -2,6 +2,8 @@ package kr.co.petmates.api.bussiness.members.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -9,7 +11,9 @@ import kr.co.petmates.api.bussiness.members.dto.MembersDTO;
 import kr.co.petmates.api.bussiness.members.entity.Members;
 import kr.co.petmates.api.bussiness.members.repository.MembersRepository;
 import kr.co.petmates.api.bussiness.members.service.MembersService;
+import kr.co.petmates.api.bussiness.oauth.client.KakaoApiClient;
 import kr.co.petmates.api.bussiness.oauth.config.JwtTokenProvider;
+import kr.co.petmates.api.bussiness.oauth.service.JwtTokenSaveService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +34,8 @@ public class MembersController {
     private final MembersService membersService;
     private final JwtTokenProvider jwtTokenProvider;
     private final MembersRepository membersRepository;
+    private final KakaoApiClient kakaoApiClient;
+    private final JwtTokenSaveService jwtTokenSaveService;
 
     // 기본 정보 보여주기
     @GetMapping("/join")
@@ -108,6 +114,48 @@ public class MembersController {
             Map<String, String> responseBody = new HashMap<>();
             responseBody.put("result", "success");
             return ResponseEntity.ok().body(responseBody);
+        }
+    }
+
+    @PostMapping("/delete")
+    public ResponseEntity<?> deleteMember(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+        // 1. 카카오 연결끊기 API 2. 카카오 로그아웃 API
+        boolean isKakaoLogout = kakaoApiClient.kakaoUnlink(session);
+        logger.info("로그아웃 성공 여부: {}", isKakaoLogout);
+
+        // 3. 데이터베이스 사용자 정보 삭제
+        String jwtToken = null;
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("jwtToken".equals(cookie.getName())) {
+                    jwtToken = cookie.getValue();
+                    logger.info("회원가입(delete) 쿠키에서 찾은 jwtToken: {}", jwtToken);
+                }
+            }
+        }
+        // jwtToken 에 포함된 사용자 이메일 찾기
+        String email = jwtTokenProvider.getEmail(jwtToken);
+        // 해당 사용자의 정보 삭제
+        Members member = membersRepository.findByEmail(email).orElse(null);
+        membersRepository.delete(member);
+
+        // 4. 세션 초기화 및 쿠키 삭제
+        if (isKakaoLogout) {   // 카카오로그아웃 처리 성공
+            session.invalidate();
+            jwtTokenSaveService.deleteTokenToCookies(response);
+
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("result", "success");
+            responseBody.put("data","회원탈퇴가 완료되었습니다.");
+            return ResponseEntity.ok(responseBody);
+        } else {
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("result", "failed");
+            responseBody.put("data","회원탈퇴 처리 중 오류가 발생했습니다.");
+            return ResponseEntity.ok(responseBody);
+//            return ResponseEntity.badRequest().body(responseBody);
         }
     }
 }

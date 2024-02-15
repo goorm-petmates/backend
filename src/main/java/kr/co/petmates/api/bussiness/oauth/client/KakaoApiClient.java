@@ -43,6 +43,9 @@ public class KakaoApiClient {
     @Value("${kakao.logout-endpoint}")
     private String logoutEndpoint;
 
+    @Value("${kakao.unlink-endpoint}")
+    private String unlinkEndpoint;
+
     private final RestTemplate restTemplate;
     @Autowired
     private AccessTokenStorage accessTokenStorage;
@@ -149,5 +152,31 @@ public class KakaoApiClient {
         logger.info("로그아웃 갱신 후 엑세스토큰: {}", newAccessToken);
         logger.info("로그아웃 갱신 후 리프레시토큰: {}", newRefreshToken);
         accessTokenStorage.setAccessToken(session, newAccessToken, newRefreshToken);
+    }
+
+    // 카카오서버에 카카오 연결해제 요청
+    public boolean kakaoUnlink(HttpSession session) {
+        String accessToken = accessTokenStorage.getAccessToken(session);   // 세션에 저장된 엑세스토큰 추출
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.set("Authorization", "Bearer " + accessToken);
+
+        HttpEntity<String> request = new HttpEntity<>(headers);
+
+        ResponseEntity<KakaoLogoutResponse> response = restTemplate.exchange(
+                unlinkEndpoint,
+                HttpMethod.POST,
+                request,
+                KakaoLogoutResponse.class
+        );
+
+        if (response.getStatusCode() == HttpStatus.OK) {   // 상태 코드가 200 OK인 경우, 요청 성공
+            logger.info("카카오연결해제 성공 true 반환");
+            return true;
+        } else {    // 그 외의 경우, 요청 처리 실패
+            logger.info("카카오연결해제 실패 false 반환");
+            return false;
+        }
     }
 }

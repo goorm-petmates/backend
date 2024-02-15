@@ -40,6 +40,8 @@ public class UserCheckService {
             // 닉네임 중복 확인
             isNicknameDuplicate = membersRepository.findByNickname(nickname).isPresent();
             members.setNickname(isNicknameDuplicate ? null : nickname);
+        } else {
+            members.setNickname(userInfo.getNickname());
         }
 
         // 사용자 정보를 업데이트하거나 설정합니다.
