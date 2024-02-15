@@ -2,12 +2,14 @@ package kr.co.petmates.api.bussiness.petsitter.repository;
 
 import java.util.List;
 import java.util.Optional;
-import kr.co.petmates.api.bussiness.petsitter.dto.PetsitterListDto;
 import kr.co.petmates.api.bussiness.petsitter.entity.Petsitter;
+import kr.co.petmates.api.bussiness.review.entity.Review;
 import kr.co.petmates.api.enums.CareType;
-import org.hibernate.query.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface PetsitterPostRepository extends JpaRepository<Petsitter, Long> {

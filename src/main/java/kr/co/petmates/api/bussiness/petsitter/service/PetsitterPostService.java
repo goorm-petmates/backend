@@ -9,7 +9,7 @@ import kr.co.petmates.api.bussiness.members.entity.Members;
 import kr.co.petmates.api.bussiness.members.repository.MembersRepository;
 import kr.co.petmates.api.bussiness.pet.entity.Pet;
 import kr.co.petmates.api.bussiness.petsitter.dto.PetsitterDto;
-import kr.co.petmates.api.bussiness.petsitter.dto.PetsitterListDto;
+//import kr.co.petmates.api.bussiness.petsitter.dto.PetsitterListDto;
 import kr.co.petmates.api.bussiness.petsitter.entity.Petsitter;
 import kr.co.petmates.api.bussiness.petsitter.repository.PetsitterPostRepository;
 import kr.co.petmates.api.enums.CareType;
@@ -24,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+
+
 public class PetsitterPostService {
 
     @Autowired

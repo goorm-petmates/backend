@@ -1,24 +1,17 @@
 package kr.co.petmates.api.bussiness.petsitter.controller;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import kr.co.petmates.api.bussiness.members.entity.Members;
-import kr.co.petmates.api.bussiness.members.repository.MembersRepository;
 import kr.co.petmates.api.bussiness.petsitter.dto.PetsitterDto;
-import kr.co.petmates.api.bussiness.petsitter.dto.PetsitterListDto;
 import kr.co.petmates.api.bussiness.petsitter.entity.Petsitter;
 import kr.co.petmates.api.bussiness.petsitter.service.PetsitterPostService;
 import kr.co.petmates.api.enums.CareType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,15 +21,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/my-page/petsitter")
 @RequiredArgsConstructor
 public class PetsitterPostController {
-
-    @Autowired
     private final PetsitterPostService petsitterPostService;
 
     // 펫시터 게시글의 존재 여부 및 Petsitter ID 확인
-    @GetMapping("/my-page/petsitter/existence/{membersId}")
+    @GetMapping("/existence/{membersId}")
     public ResponseEntity<?> checkPetsitterPostAndReturnId(@PathVariable("membersId") Long membersId) {
         return petsitterPostService.findPetsitterIdByMembersId(membersId)
                 .map(petsitterId -> {

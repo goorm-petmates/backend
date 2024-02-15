@@ -1,7 +1,6 @@
 package kr.co.petmates.api.bussiness.petsitter.dto;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import kr.co.petmates.api.bussiness.petsitter.entity.Petsitter;
 import kr.co.petmates.api.enums.CareType;
@@ -52,6 +51,16 @@ public class PetsitterDto {
         petsitterDto.setIsBringUp(petsitter.getIsBringUp());
 
         return petsitterDto;
+    }
+
+    public interface PetsitterProjection {
+        Long getId(); // Petsitter의 ID
+        String getTitle(); // Petsitter의 제목
+        MemberProjection getMembers(); // 연관된 Member의 프로젝션
+
+        interface MemberProjection {
+            Long getId(); // Member의 ID만 포함
+        }
     }
 }
 

@@ -61,9 +61,8 @@ public class SecurityConfig {
                                 .requestMatchers("/favicon.ico").permitAll() // favicon 접근 허용
                                 .requestMatchers(PathRequest.toH2Console()).permitAll()// favicon.ico 요청 인증 무시
                                 .requestMatchers("/api/kakao/**", "/api/oauth/**", "/api/members/test","/api/my-page/**",
-                                        "/v3/**", "/swagger-ui/**", "/api/reserve/**",
-                                        "/api/members/login",
-                                        "/api/petsitter/**").permitAll() // 접근 허용
+                                        "/v3/**", "/swagger-ui/**", "/api/reserve/**", "/api/petsitter/**",
+                                        "/api/members/login").permitAll() // 접근 허용
                                 .requestMatchers("/api/members/my-info", "/api/members/add-image", "/api/members/delete",
                                         "/api/members/logout", "/adm/test",
                                         "/api/ide/**", "/api/chat/**", "/chat/**").authenticated() // 로그인했을 때 접근 허용
