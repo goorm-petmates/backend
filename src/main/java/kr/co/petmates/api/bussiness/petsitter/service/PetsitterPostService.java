@@ -1,7 +1,9 @@
 package kr.co.petmates.api.bussiness.petsitter.service;
 
+import java.util.List;
 import java.util.Optional;
 import kr.co.petmates.api.bussiness.petsitter.dto.PetsitterDto;
+import kr.co.petmates.api.bussiness.petsitter.dto.PetsitterDto.PetsitterProjection;
 import kr.co.petmates.api.bussiness.petsitter.entity.Petsitter;
 import kr.co.petmates.api.bussiness.petsitter.repository.PetsitterPostRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,10 @@ public class PetsitterPostService {
     public Optional<PetsitterDto> getContentsByPetsitterId(Long petsitterId) {
         return petsitterPostRepository.findById(petsitterId)
                 .map(PetsitterDto::toPetsitterDto); // PetsitterDto로 변환
+    }
 
+    // 펫시터 게시글 리스트 조회
+    public List<PetsitterProjection> findAllPetsittersWithMemberId() {
+        return petsitterPostRepository.findAllProjectedBy();
     }
 }
