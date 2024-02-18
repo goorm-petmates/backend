@@ -33,7 +33,6 @@ import org.hibernate.annotations.DynamicUpdate;
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamicUpdate
-//@JsonIgnoreProperties({ "pwd" })
 @Getter
 @Setter
 @ToString
@@ -59,19 +58,19 @@ public class Petsitter extends BaseDateTimeEntity implements Serializable {
     @Column(nullable = false)
     private BigDecimal nightPrice;     //  1박 가격
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "INT DEFAULT 0")
     private Integer viewCnt;        //  조회수
 
-    @Column(nullable = false)
-    private Integer reviewCnt;      //  리뷰수
+    @Column(columnDefinition = "INT DEFAULT 0")
+    private Integer reviewCnt = 0;      //  리뷰수
 
-    @Column(nullable = false)
+    @Column
     private Integer averageRating;  //  평균 리뷰 평점
 
     @Column(name ="order_by_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime orderByDate;  //  정렬 기준 날짜
 
-    @Column(nullable = false)
+    @Column
     private Boolean isKakaoProfile; //  카카오 소셜 프로필 사용 여부
 
     @Column
@@ -87,11 +86,16 @@ public class Petsitter extends BaseDateTimeEntity implements Serializable {
     @Column(nullable = false)
     private String area2;           //  구 단위 지역
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "BOOLEAN DEFAULT false")
     private Boolean isBringUp;      // 끌어올림 여부
 
     // 멤버와 연결
-    @OneToOne
-    @JoinColumn(name = "members_id")
-    private Members members;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "members_id", referencedColumnName = "id")
+    private Members members;    // 작성
+
+    public void addVeiwCnt() {
+        this.viewCnt++;
+    }
+
 }

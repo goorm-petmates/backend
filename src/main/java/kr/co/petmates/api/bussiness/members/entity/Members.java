@@ -9,9 +9,11 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import kr.co.petmates.api.bussiness.petsitter.entity.Petsitter;
 import kr.co.petmates.api.common.entity.BaseDateTimeEntity;
 import kr.co.petmates.api.enums.Role;
@@ -76,8 +78,8 @@ public class Members extends BaseDateTimeEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToOne(mappedBy = "members", fetch = FetchType.LAZY)
-    private Petsitter petsitter;
+    @OneToMany(mappedBy = "members", fetch = FetchType.LAZY)
+    private List<Petsitter> petsitter;      // 펫시터
 
 //    @ManyToMany
 //    @JoinTable(
