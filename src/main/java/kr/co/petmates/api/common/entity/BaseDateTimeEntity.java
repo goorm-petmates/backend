@@ -3,7 +3,6 @@ package kr.co.petmates.api.common.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
@@ -16,8 +15,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class BaseDateTimeEntity {
 
     @CreatedDate
-    @Column(name = "reg_at", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime regDate; // 등록일
+    @Column(name = "create_at", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private LocalDateTime createDate; // 등록일
 
     @LastModifiedDate
     @Column(name ="mod_at")

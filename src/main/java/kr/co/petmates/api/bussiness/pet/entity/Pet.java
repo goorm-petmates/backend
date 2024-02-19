@@ -60,16 +60,16 @@ public class Pet extends BaseDateTimeEntity implements Serializable {
     private Gender sex; // 성별
 
     @Column(nullable = false)
-    private boolean isNeutering; // 중성화
+    private Boolean isNeutering; // 중성화
 
     @Column(nullable = false)
-    private boolean isAllergy; // 알러지
+    private Boolean isAllergy; // 알러지
 
     @Column(nullable = false)
-    private boolean isDisease; // 질병
+    private Boolean isDisease; // 질병
 
     @Column(columnDefinition = "LONGTEXT")
-    private String ect; // 참고사항
+    private String etc; // 참고사항
 
     public static Pet toPetEntity(PetDto petDto) { // dto -> entity
         Pet pet = new Pet();
@@ -78,7 +78,7 @@ public class Pet extends BaseDateTimeEntity implements Serializable {
         pet.setBirthYear(petDto.getBirthYear());
         pet.setWeight(petDto.getWeight());
         pet.setSex(petDto.getSex());
-        pet.setEct(petDto.getEct());
+        pet.setEtc(petDto.getEtc());
         return pet;
     }
 

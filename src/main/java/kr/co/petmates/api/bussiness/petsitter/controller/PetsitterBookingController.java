@@ -66,7 +66,7 @@ public class PetsitterBookingController {
         Page<BookingDto> bookingRequests = petsitterBookingService.findBookingRequestsByPetsitterId(
                 petsitterId,
                 statuses,
-                PageRequest.of(page, size, Sort.by("regDate").descending())
+                PageRequest.of(page, size, Sort.by("createDate").descending())
         );
 
         Map<String, Object> response = new HashMap<>();
@@ -75,7 +75,7 @@ public class PetsitterBookingController {
         response.put("pageTotalCnt", bookingRequests.getTotalPages());
         response.put("pageNum", bookingRequests.getNumber());
         response.put("data", bookingRequests.getContent());
-        response.put("offset", PageRequest.of(page, size, Sort.by("regAt").descending()).getOffset());
+        response.put("offset", PageRequest.of(page, size, Sort.by("createDate").descending()).getOffset());
 
         return ResponseEntity.ok(response);
     }
