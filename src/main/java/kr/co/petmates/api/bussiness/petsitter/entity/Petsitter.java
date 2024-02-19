@@ -94,7 +94,7 @@ public class Petsitter extends BaseDateTimeEntity implements Serializable {
     @JoinColumn(name = "members_id", referencedColumnName = "id")
     private Members members;    // 작성
 
-    public void addVeiwCnt() {
+    public void addViewCnt() {
         this.viewCnt++;
     }
 

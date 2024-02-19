@@ -66,7 +66,7 @@ public class PetsitterPostService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public Optional<PetsitterDto> getPetsitterById(Long id) {
         try {
 //            Petsitter petsitter = petsitterPostRepository.findById(id).orElseThrow(
@@ -84,7 +84,7 @@ public class PetsitterPostService {
                 Hibernate.initialize((petsitter.getMembers()));
 
                 // 조회수 증가
-                petsitter.addVeiwCnt();
+                petsitter.addViewCnt();
 
                 return optionalPetsitter.map(PetsitterDto::toPetsitterDto);
             } else {
