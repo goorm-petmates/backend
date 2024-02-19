@@ -21,13 +21,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/my-page/petsitter")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class PetsitterPostController {
     private final PetsitterPostService petsitterPostService;
 
     // 펫시터 게시글의 존재 여부 및 Petsitter ID 확인
-    @GetMapping("/existence/{membersId}")
+    @GetMapping("/my-page/petsitter/existence/{membersId}")
     public ResponseEntity<?> checkPetsitterPostAndReturnId(@PathVariable("membersId") Long membersId) {
         return petsitterPostService.findPetsitterIdByMembersId(membersId)
                 .map(petsitterId -> {

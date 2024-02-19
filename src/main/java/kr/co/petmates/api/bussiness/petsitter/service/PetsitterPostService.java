@@ -3,6 +3,7 @@ package kr.co.petmates.api.bussiness.petsitter.service;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import kr.co.petmates.api.bussiness.members.entity.Members;
@@ -10,6 +11,7 @@ import kr.co.petmates.api.bussiness.members.repository.MembersRepository;
 import kr.co.petmates.api.bussiness.pet.entity.Pet;
 import kr.co.petmates.api.bussiness.petsitter.dto.PetsitterDto;
 //import kr.co.petmates.api.bussiness.petsitter.dto.PetsitterListDto;
+import kr.co.petmates.api.bussiness.petsitter.dto.PetsitterDto.PetsitterProjection;
 import kr.co.petmates.api.bussiness.petsitter.entity.Petsitter;
 import kr.co.petmates.api.bussiness.petsitter.repository.PetsitterPostRepository;
 import kr.co.petmates.api.enums.CareType;
@@ -49,7 +51,11 @@ public class PetsitterPostService {
     public Optional<PetsitterDto> getContentsByPetsitterId(Long petsitterId) {
         return petsitterPostRepository.findById(petsitterId)
                 .map(PetsitterDto::toPetsitterDto); // PetsitterDto로 변환
+    }
 
+    // 펫시터 게시글 리스트 조회
+    public List<PetsitterProjection> findAllPetsittersWithMemberId() {
+        return petsitterPostRepository.findAllProjectedBy();
     }
 
     public List<PetsitterDto> findPetsittersWithMembers() {
