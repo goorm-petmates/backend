@@ -55,7 +55,7 @@ public class SecurityConfig {
                 )
 //                .cors(Customizer.withDefaults()) // 기본 CORS 설정 사용
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 커스텀 CORS 설정 적용
-//                .httpBasic(withDefaults())
+                .httpBasic(withDefaults())
                 .authorizeHttpRequests(auth -> auth
 //                        .requestMatchers("/h2-console/**", "/favicon.ico").permitAll() // H2 콘솔, favicon 접근 허용
                                 .requestMatchers("/favicon.ico").permitAll() // favicon 접근 허용
