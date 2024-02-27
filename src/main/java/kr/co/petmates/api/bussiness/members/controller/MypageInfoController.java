@@ -2,6 +2,10 @@ package kr.co.petmates.api.bussiness.members.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import kr.co.petmates.api.bussiness.members.dto.MembersDTO;
 import kr.co.petmates.api.bussiness.members.entity.Members;
 import kr.co.petmates.api.bussiness.members.repository.MembersRepository;
 import kr.co.petmates.api.bussiness.members.service.MembersService;
@@ -13,6 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -55,5 +61,27 @@ public class MypageInfoController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PostMapping("/edit")
+    public ResponseEntity<?> editMyInfo(@RequestBody MembersDTO membersDTO) {
+        Optional<Members> existingMember = membersRepository.findByEmail(membersDTO.getEmail());
+
+        Members member = existingMember.get();
+
+        member.setPhone(membersDTO.getPhone());
+        member.setFullAddr(membersDTO.getFullAddr());
+        member.setRoadAddr(membersDTO.getRoadAddr());
+        member.setDetailAddr(membersDTO.getDetailAddr());
+        member.setLatitude(membersDTO.getLatitude());
+        member.setLongitude(membersDTO.getLongitude());
+        member.setZipcode(membersDTO.getZipcode());
+
+        membersRepository.save(member);
+
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("result", "success");
+        responseBody.put("data", "회원정보가 수정되었습니다.");
+        return ResponseEntity.ok().body(responseBody);
     }
 }

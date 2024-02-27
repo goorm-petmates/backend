@@ -88,6 +88,7 @@ public class MembersController {
         }
 
         member.setPhone(membersDTO.getPhone());
+        member.setFullAddr(membersDTO.getFullAddr());
         member.setRoadAddr(membersDTO.getRoadAddr());
         member.setDetailAddr(membersDTO.getDetailAddr());
         member.setLatitude(membersDTO.getLatitude());
