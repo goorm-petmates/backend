@@ -54,7 +54,7 @@ public class Members extends BaseDateTimeEntity implements Serializable {
     @Column(length = 8)
     private String zipcode; // 우편번호
 
-    @Column(length = 512)
+    @Column(length = 1024)
     private String fullAddr; // 전체 주소
 
     @Column(length = 512)
