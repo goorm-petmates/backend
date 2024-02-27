@@ -1,0 +1,67 @@
+package kr.co.petmates.api.bussiness.oauth.service;
+
+import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import kr.co.petmates.api.bussiness.members.entity.Members;
+import kr.co.petmates.api.bussiness.members.repository.MembersRepository;
+import kr.co.petmates.api.bussiness.oauth.controller.KakaoOauthController;
+import kr.co.petmates.api.bussiness.oauth.dto.KakaoUserInfoResponse;
+import kr.co.petmates.api.enums.Role;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class UserCheckService {
+    private static final Logger logger = LoggerFactory.getLogger(KakaoOauthController.class);
+    private final MembersRepository membersRepository;
+
+    // isNewUser 값 반환, 이메일로 데이터베이스 조회(true: 신규, false: 기존)
+    public boolean isNewUser(String email) {
+        Optional<Members> memberOptional = membersRepository.findByEmail(email);
+        if (memberOptional.isPresent()) {
+            Members member = memberOptional.get();
+            return member.getPhone() == null;
+        }
+
+        // 이메일로 사용자를 찾지 못한 경우에도 새로운 사용자로 간주
+        return true;
+    }
+
+    // 사용자 존재 여부를 확인하고 업데이트하거나 새로 저장
+    @Transactional
+    public void saveOrUpdateUser(KakaoUserInfoResponse userInfo, boolean isNewUser) {
+        logger.info("사용자 정보 저장");
+        String email = userInfo.getEmail();
+        Members members = membersRepository.findByEmail(email)
+                .orElseGet(Members::new); // 기존 사용자가 없을 경우 새 Members 객체 생성
+
+        String nickname = userInfo.getNickname();
+        boolean isNicknameDuplicate;
+        if (isNewUser) {
+            // 닉네임 중복 확인
+            isNicknameDuplicate = membersRepository.findByNickname(nickname).isPresent();
+            members.setNickname(isNicknameDuplicate ? null : nickname);
+        } else {
+            members.setNickname(userInfo.getNickname());
+        }
+
+        // 사용자 정보를 업데이트하거나 설정합니다.
+        members.setEmail(email);
+        members.setKakaoId(userInfo.getKakaoId());
+        logger.info("사용자정보 저장하기 kakaoId: {}", userInfo.getKakaoId());
+        members.setProfileImage(userInfo.getProfileImage());
+        members.setIsWithdrawn(false);
+        members.setLastLoginDate(LocalDateTime.now());
+        if (email.equals("admin@petmates.co.kr")) {
+            members.setRole(Role.ADMIN);
+        } else {
+            members.setRole(Role.USER);
+        }
+        membersRepository.save(members);
+        logger.info("사용자 정보 저장 완료");
+    }
+}
