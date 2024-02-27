@@ -25,11 +25,11 @@ public class UserService {
     // 카카오서버로부터 전달받은 사용자정보 데이터베이스 저장 / isNewUser, jwtToken, refreshToken 생성 후 반환
     public AuthResult createUserResult(KakaoUserInfoResponse userInfo, HttpServletResponse response) {
         String email = userInfo.getEmail(); // 프로필에서 이메일 정보 추출
-        logger.info("userService email값: {}", email);
+//        logger.info("userService email값: {}", email);
 
         // isNewUser 값 반환, 이메일로 데이터베이스 조회
         boolean isNewUser = userCheckService.isNewUser(email);
-        logger.info("userService isNewUser값: {}", isNewUser);
+//        logger.info("userService isNewUser값: {}", isNewUser);
 
         String jwtToken = jwtTokenProvider.createJwtToken(email);
         String refreshToken = jwtTokenProvider.createRefreshToken(jwtToken);

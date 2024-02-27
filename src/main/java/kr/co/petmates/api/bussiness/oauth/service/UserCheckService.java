@@ -5,14 +5,18 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import kr.co.petmates.api.bussiness.members.entity.Members;
 import kr.co.petmates.api.bussiness.members.repository.MembersRepository;
+import kr.co.petmates.api.bussiness.oauth.controller.KakaoOauthController;
 import kr.co.petmates.api.bussiness.oauth.dto.KakaoUserInfoResponse;
 import kr.co.petmates.api.enums.Role;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class UserCheckService {
+    private static final Logger logger = LoggerFactory.getLogger(KakaoOauthController.class);
     private final MembersRepository membersRepository;
 
     // isNewUser 값 반환, 이메일로 데이터베이스 조회(true: 신규, false: 기존)
@@ -30,6 +34,7 @@ public class UserCheckService {
     // 사용자 존재 여부를 확인하고 업데이트하거나 새로 저장
     @Transactional
     public void saveOrUpdateUser(KakaoUserInfoResponse userInfo, boolean isNewUser) {
+        logger.info("사용자 정보 저장");
         String email = userInfo.getEmail();
         Members members = membersRepository.findByEmail(email)
                 .orElseGet(Members::new); // 기존 사용자가 없을 경우 새 Members 객체 생성
@@ -47,6 +52,7 @@ public class UserCheckService {
         // 사용자 정보를 업데이트하거나 설정합니다.
         members.setEmail(email);
         members.setKakaoId(userInfo.getKakaoId());
+        logger.info("사용자정보 저장하기 kakaoId: {}", userInfo.getKakaoId());
         members.setProfileImage(userInfo.getProfileImage());
         members.setIsWithdrawn(false);
         members.setLastLoginDate(LocalDateTime.now());
@@ -56,5 +62,6 @@ public class UserCheckService {
             members.setRole(Role.USER);
         }
         membersRepository.save(members);
+        logger.info("사용자 정보 저장 완료");
     }
 }

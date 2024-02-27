@@ -30,7 +30,7 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
 
-        logger.info("JWT 토큰 생성(jwtTokenProvider): token={}", jwtToken);
+//        logger.info("JWT 토큰 생성(jwtTokenProvider): token={}", jwtToken);
 
         return jwtToken;
     }
@@ -43,7 +43,7 @@ public class JwtTokenProvider {
                 .getBody();
         String email = claims.getSubject();
 
-        logger.info("(jwtTokenProvider): 사용자 이메일 추출={}", email);
+//        logger.info("(jwtTokenProvider): 사용자 이메일 추출={}", email);
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + 30L * 24 * 60 * 60 * 1000); // 30 days
@@ -56,7 +56,7 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
 
-        logger.info("Refresh 토큰 생성(jwtTokenProvider): token={}", refreshToken);
+//        logger.info("Refresh 토큰 생성(jwtTokenProvider): token={}", refreshToken);
 
         return refreshToken;
     }

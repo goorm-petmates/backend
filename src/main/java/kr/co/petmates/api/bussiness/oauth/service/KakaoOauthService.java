@@ -28,7 +28,7 @@ public class KakaoOauthService {
         String accessToken = kakaoTokenResponse.getAccess_token();
         String refreshToken = kakaoTokenResponse.getRefresh_token();
         logger.info("KakaoOauthService 카카오api 통해 생성한 엑세스토큰, 반환값: {}", accessToken);
-        logger.info("KakaoOauthService 카카오api 통해 생성한 refreshToken, 반환값: {}", refreshToken);
+//        logger.info("KakaoOauthService 카카오api 통해 생성한 refreshToken, 반환값: {}", refreshToken);
 
         // 액세스 토큰 세션 저장
         accessTokenStorage.setAccessToken(session, accessToken, refreshToken);
@@ -37,7 +37,7 @@ public class KakaoOauthService {
     // 엑세스 토큰으로 카카오서버로부터 사용자 정보 가져오기
     public KakaoUserInfoResponse getUserInfo(HttpSession session) {
         String accessToken = accessTokenStorage.getAccessToken(session);
-        logger.info("KakaoOauthService 세션에 저장된 엑세스토큰값: {}", accessToken);
+//        logger.info("KakaoOauthService 세션에 저장된 엑세스토큰값: {}", accessToken);
         KakaoUserInfoResponse userInfo = kakaoApiClient.getUserInfo(accessToken);
         return userInfo;
     }

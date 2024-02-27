@@ -49,7 +49,7 @@ public class KakaoOauthController {
         if (code == null) {
             return ResponseEntity.badRequest().body("인가코드 없음");
         }
-        logger.info("인가코드: {}", code);
+        logger.info("인가코드 추출: {}", code);
 
         // 인가코드로 카카오 엑세스토큰 요청
         kakaoOauthService.getAccessToken(session, code);

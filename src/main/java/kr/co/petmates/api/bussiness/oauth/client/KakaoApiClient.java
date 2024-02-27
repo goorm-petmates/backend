@@ -74,7 +74,7 @@ public class KakaoApiClient {
                 KakaoTokenResponse.class
         );
 
-        logger.info("kakaoApiClient 카카오 요청해서 생성한 엑세스토큰: {}", response.getBody());
+//        logger.info("kakaoApiClient 카카오 요청해서 생성한 엑세스토큰: {}", response.getBody());
         return response.getBody();
     }
 
@@ -97,7 +97,7 @@ public class KakaoApiClient {
 
         KakaoUserInfoResponse userInfo = response.getBody();
 
-        logger.info("kakaoApiClient 사용자정보: {}", userInfo);
+//        logger.info("kakaoApiClient 사용자정보: {}", userInfo);
         return userInfo;
     }
 

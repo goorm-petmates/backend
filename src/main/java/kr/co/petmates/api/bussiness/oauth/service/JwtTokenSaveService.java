@@ -19,7 +19,7 @@ public class JwtTokenSaveService {
         jwtTokenCookie.setPath("/");
         jwtTokenCookie.setMaxAge(-1); // 세션 쿠키로 설정하여 브라우저 종료 시 삭제
         response.addCookie(jwtTokenCookie);
-        logger.info("JWT 토큰 쿠키 저장: {}", jwtTokenCookie);
+        logger.info("JWT 토큰 쿠키 저장");
 
         // 리프레시 토큰을 세션 쿠키에 저장
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
@@ -27,7 +27,7 @@ public class JwtTokenSaveService {
         refreshTokenCookie.setPath("/");
         refreshTokenCookie.setMaxAge(-1); // 세션 쿠키로 설정하여 브라우저 종료 시 삭제
         response.addCookie(refreshTokenCookie);
-        logger.info("리프레시 토큰 쿠키 저장: {}", refreshTokenCookie);
+//        logger.info("리프레시 토큰 쿠키 저장: {}", refreshTokenCookie);
     }
 
     public static void deleteTokenToCookies(HttpServletResponse response) {

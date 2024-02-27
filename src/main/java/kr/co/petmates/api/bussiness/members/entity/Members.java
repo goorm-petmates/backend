@@ -78,7 +78,7 @@ public class Members extends BaseDateTimeEntity implements Serializable {
 
 //    @OneToOne(mappedBy = "members", fetch = FetchType.LAZY)
 //    private Petsitter petsitter;
-
+//
 //    @ManyToMany
 //    @JoinTable(
 //            name = "USER_AUTHORITY",
