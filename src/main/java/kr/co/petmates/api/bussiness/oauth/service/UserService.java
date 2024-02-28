@@ -2,6 +2,7 @@
 package kr.co.petmates.api.bussiness.oauth.service;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import kr.co.petmates.api.bussiness.members.entity.Members;
 import kr.co.petmates.api.bussiness.oauth.config.JwtTokenProvider;
 import kr.co.petmates.api.bussiness.oauth.controller.KakaoOauthController;
@@ -23,7 +24,7 @@ public class UserService {
     private JwtTokenSaveService jwtTokenSaveService;
 
     // 카카오서버로부터 전달받은 사용자정보 데이터베이스 저장 / isNewUser, jwtToken, refreshToken 생성 후 반환
-    public AuthResult createUserResult(KakaoUserInfoResponse userInfo, HttpServletResponse response) {
+    public AuthResult createUserResult(KakaoUserInfoResponse userInfo, HttpServletResponse response, HttpSession session) {
         String email = userInfo.getEmail(); // 프로필에서 이메일 정보 추출
 //        logger.info("userService email값: {}", email);
 
@@ -37,7 +38,7 @@ public class UserService {
         jwtTokenSaveService.saveTokenToCookies(jwtToken, refreshToken, response);
 
         // 사용자 저장 또는 업데이트
-        userCheckService.saveOrUpdateUser(userInfo, isNewUser);
+        userCheckService.saveOrUpdateUser(userInfo, session);
         return new AuthResult(jwtToken, refreshToken, isNewUser);
     }
 

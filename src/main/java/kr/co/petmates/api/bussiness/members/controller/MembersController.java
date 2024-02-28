@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import kr.co.petmates.api.bussiness.members.dto.MembersDTO;
 import kr.co.petmates.api.bussiness.members.entity.Members;
 import kr.co.petmates.api.bussiness.members.repository.MembersRepository;
@@ -39,64 +38,58 @@ public class MembersController {
 
     // 기본 정보 보여주기
     @GetMapping("/join")
-    public ResponseEntity<Members> getMemberInfo(HttpServletRequest request) {
+    public ResponseEntity<MembersDTO> getMemberInfo(HttpSession session) {
         logger.info("회원가입(get) 호출 성공");
-        // 1. 쿠키에서 jwtToken 찾기
-        String jwtToken = null;
-        Cookie[] cookies = request.getCookies();
 
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("jwtToken".equals(cookie.getName())) {
-                    jwtToken = cookie.getValue();
-                    logger.info("회원가입(get) 쿠키에서 찾은 jwtToken: {}", jwtToken);
-                }
-            }
-        }
+        // 세션에서 사용자 정보 가져오기
+        MembersDTO tempUserInfo = (MembersDTO) session.getAttribute("tempUserInfo");
 
-        // 2. jwtToken 에 포함된 사용자 이메일 찾기
-        String email = jwtTokenProvider.getEmail(jwtToken);
-
-        // 3. 해당 사용자의 정보 불러오기
-        Members member = membersRepository.findByEmail(email).orElse(null);;
-        if (member.getEmail() != null) {
-            return ResponseEntity.ok(member);
+        if (tempUserInfo != null) {
+            logger.info("세션에서 정보 가져오기");
+            logger.info("세션 정보 이메일:{}", tempUserInfo.getEmail());
+            logger.info("세션 정보 닉네임:{}", tempUserInfo.getNickname());
+            // 세션에 사용자 정보가 있으면, 이 정보를 JSON 형태로 클라이언트에 반환합니다.
+            return ResponseEntity.ok(tempUserInfo);
         } else {
-            return ResponseEntity.notFound().build();
+            // 세션에 사용자 정보가 없으면, 빈 MembersDTO 객체를 생성하여 이를 반환합니다.
+            // 상태 코드는 204 No Content가 적절할 수 있으나, 클라이언트에서 null 체크를 하므로,
+            // 여기서는 빈 객체를 반환하고 상태 코드는 200 OK를 사용합니다.
+            return ResponseEntity.ok(new MembersDTO());
         }
     }
 
-    // 추가 정보 저장
     @PostMapping("/join/save")
-    public ResponseEntity<?> saveMember(@RequestBody MembersDTO membersDTO) {
-        Optional<Members> existingMember = membersRepository.findByEmail(membersDTO.getEmail());
+    public ResponseEntity<?> saveMember(@RequestBody MembersDTO membersDTOFromClient, HttpSession session) {
+        // 세션에서 임시 저장된 MembersDTO 정보 가져오기
+        MembersDTO sessionMembersDTO = (MembersDTO) session.getAttribute("tempUserInfo");
 
-        if (!existingMember.isPresent()) {
-            // 회원이 존재하지 않는 경우, 에러 처리 또는 새로운 회원 등록 로직을 구현
+        if (sessionMembersDTO == null) {
+            // 세션에 정보가 없으면, 에러 메시지 반환
             Map<String, String> responseBody = new HashMap<>();
-            responseBody.put("result", "failed");
-            responseBody.put("data", "이메일이 유효하지 않습니다. 카카오로그인부터 다시 시도해주세요.");
-            return ResponseEntity.ok().body(responseBody);
+            responseBody.put("result", "error");
+            responseBody.put("data", "세션에 사용자 정보가 없습니다.");
+            return ResponseEntity.badRequest().body(responseBody);
         }
 
-        Members member = existingMember.get();
-        logger.info("회원가입(save) 전달받은 이메일: {}", membersDTO.getEmail());
-        logger.info("회원가입(save) 전달받은 닉네임: {}", membersDTO.getNickname());
+        // 세션 DTO 정보와 프론트에서 받은 DTO 정보 결합
+        // 여기서는 프론트에서 변경 가능한 정보만 업데이트
+        sessionMembersDTO.setPhone(membersDTOFromClient.getPhone());
+        sessionMembersDTO.setZipcode(membersDTOFromClient.getZipcode());
+        sessionMembersDTO.setFullAddr(membersDTOFromClient.getFullAddr());
+        sessionMembersDTO.setRoadAddr(membersDTOFromClient.getRoadAddr());
+        sessionMembersDTO.setDetailAddr(membersDTOFromClient.getDetailAddr());
+        sessionMembersDTO.setLatitude(membersDTOFromClient.getLatitude());
+        sessionMembersDTO.setLongitude(membersDTOFromClient.getLongitude());
 
-        if (membersDTO.getNickname() != null) {
-            member.setNickname(membersDTO.getNickname());
-        }
-
-        member.setPhone(membersDTO.getPhone());
-        member.setFullAddr(membersDTO.getFullAddr());
-        member.setRoadAddr(membersDTO.getRoadAddr());
-        member.setDetailAddr(membersDTO.getDetailAddr());
-        member.setLatitude(membersDTO.getLatitude());
-        member.setLongitude(membersDTO.getLongitude());
-        member.setZipcode(membersDTO.getZipcode());
-
+        // MembersDTO를 Members 엔티티로 변환
+        Members member = Members.toMembersEntity(sessionMembersDTO);
+        // Members 엔티티 저장
         membersRepository.save(member);
 
+        // 세션에서 사용자 정보 제거
+        session.removeAttribute("tempUserInfo");
+
+        // 성공 응답 반환
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("result", "success");
         responseBody.put("data", "회원가입에 성공했습니다 :)");
@@ -119,12 +112,10 @@ public class MembersController {
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<?> deleteMember(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-        // 1. 카카오 연결끊기 API 2. 카카오 로그아웃 API
-        boolean isKakaoLogout = kakaoApiClient.kakaoUnlink(session);
-        logger.info("로그아웃 성공 여부: {}", isKakaoLogout);
+    public ResponseEntity<?> deleteMember(@RequestBody Map<String, String> payload, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+        String inputKakaoAccount = payload.get("kakaoAccount");
+        logger.info("회원탈퇴 클라이언트 이메일: {}", inputKakaoAccount);
 
-        // 3. 데이터베이스 사용자 정보 삭제
         String jwtToken = null;
         Cookie[] cookies = request.getCookies();
 
@@ -133,11 +124,27 @@ public class MembersController {
                 if ("jwtToken".equals(cookie.getName())) {
                     jwtToken = cookie.getValue();
                     logger.info("회원가입(delete) 쿠키에서 찾은 jwtToken: {}", jwtToken);
+                    break;
                 }
             }
         }
         // jwtToken 에 포함된 사용자 이메일 찾기
         String email = jwtTokenProvider.getEmail(jwtToken);
+
+        // 입력받은 카카오 계정과 토큰에서 추출한 이메일 비교
+        if (!inputKakaoAccount.equals(email)) {
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("result", "failed");
+            responseBody.put("data","이메일을 다시 입력해주세요.");
+            return ResponseEntity.ok(responseBody);
+        }
+
+        // 1. 카카오 연결끊기 API 2. 카카오 로그아웃 API
+        boolean isKakaoLogout = kakaoApiClient.kakaoUnlink(session);
+        logger.info("로그아웃 성공 여부: {}", isKakaoLogout);
+
+        // 3. 데이터베이스 사용자 정보 삭제
+
         // 해당 사용자의 정보 삭제
         Members member = membersRepository.findByEmail(email).orElse(null);
         membersRepository.delete(member);

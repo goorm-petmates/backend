@@ -1,8 +1,9 @@
 package kr.co.petmates.api.bussiness.oauth.service;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.Optional;
+import kr.co.petmates.api.bussiness.members.dto.MembersDTO;
 import kr.co.petmates.api.bussiness.members.entity.Members;
 import kr.co.petmates.api.bussiness.members.repository.MembersRepository;
 import kr.co.petmates.api.bussiness.oauth.controller.KakaoOauthController;
@@ -33,35 +34,41 @@ public class UserCheckService {
 
     // 사용자 존재 여부를 확인하고 업데이트하거나 새로 저장
     @Transactional
-    public void saveOrUpdateUser(KakaoUserInfoResponse userInfo, boolean isNewUser) {
+    public void saveOrUpdateUser(KakaoUserInfoResponse userInfo, HttpSession session) {
         logger.info("사용자 정보 저장");
+
         String email = userInfo.getEmail();
-        Members members = membersRepository.findByEmail(email)
-                .orElseGet(Members::new); // 기존 사용자가 없을 경우 새 Members 객체 생성
+        Optional<Members> existingMember = membersRepository.findByEmail(email);
 
-        String nickname = userInfo.getNickname();
-        boolean isNicknameDuplicate;
-        if (isNewUser) {
-            // 닉네임 중복 확인
-            isNicknameDuplicate = membersRepository.findByNickname(nickname).isPresent();
-            members.setNickname(isNicknameDuplicate ? null : nickname);
+        if (existingMember.isPresent()) {
+            // 데이터베이스에 이미 사용자가 있는 경우
+            Members member = existingMember.get();
+            member.setEmail(email);
+            member.setNickname(userInfo.getNickname());
+            member.setProfileImage(userInfo.getProfileImage());
+            member.setKakaoId(userInfo.getKakaoId());
+            // 기존 엔티티 업데이트
+            membersRepository.save(member);
         } else {
-            members.setNickname(userInfo.getNickname());
-        }
+            MembersDTO membersDTO = new MembersDTO();
+            logger.info("신규 가입 이메일 저장:{}", userInfo.getEmail());
 
-        // 사용자 정보를 업데이트하거나 설정합니다.
-        members.setEmail(email);
-        members.setKakaoId(userInfo.getKakaoId());
-        logger.info("사용자정보 저장하기 kakaoId: {}", userInfo.getKakaoId());
-        members.setProfileImage(userInfo.getProfileImage());
-        members.setIsWithdrawn(false);
-        members.setLastLoginDate(LocalDateTime.now());
-        if (email.equals("admin@petmates.co.kr")) {
-            members.setRole(Role.ADMIN);
-        } else {
-            members.setRole(Role.USER);
+            // 넘겨받은 정보를 DTO에 저장
+            membersDTO.setEmail(userInfo.getEmail());
+            logger.info("임시 dto 저장 이메일: {}", membersDTO.getEmail());
+            membersDTO.setKakaoId(userInfo.getKakaoId());
+            logger.info("임시 dto 저장 KakaoId: {}", membersDTO.getKakaoId());
+            membersDTO.setNickname(userInfo.getNickname());
+            membersDTO.setProfileImage(userInfo.getProfileImage());
+            membersDTO.setIsWithdrawn(false); // 기본값 설정
+            if (userInfo.getEmail().equals("admin@petmates.co.kr")) {
+                membersDTO.setRole(Role.ADMIN);
+            } else {
+                membersDTO.setRole(Role.USER);
+            }
+
+            // 세션에 DTO 저장
+            session.setAttribute("tempUserInfo", membersDTO);
         }
-        membersRepository.save(members);
-        logger.info("사용자 정보 저장 완료");
     }
 }

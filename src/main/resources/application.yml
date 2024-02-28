@@ -2,8 +2,8 @@
 spring:
   profiles:
     active:
-#      - local
-      - dev
+      - local
+#      - dev
 #      - prod
 
   docker:

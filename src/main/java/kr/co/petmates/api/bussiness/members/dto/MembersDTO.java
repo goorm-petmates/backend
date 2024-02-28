@@ -1,22 +1,35 @@
 package kr.co.petmates.api.bussiness.members.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Email;
+import kr.co.petmates.api.enums.Role;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 public class MembersDTO {
-    @JsonProperty("userNickName")
+    @JsonProperty("nickname")
     private String nickname;
 
-    @JsonProperty("userPhone")
+    @JsonProperty("phone")
     private String phone;
 
-    @JsonProperty("userEmail")
+    @JsonProperty("email")
+    @Email
     private String email;
+
+    @JsonProperty("profileImage")
+    private String profileImage;
+
+    private Long kakaoId;
+
+    private Boolean isWithdrawn; // 탈퇴여부
+
+    private Role role;
 
     @JsonProperty("fullAddr")
     private String fullAddr;

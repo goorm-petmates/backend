@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import kr.co.petmates.api.bussiness.members.dto.MembersDTO;
 import kr.co.petmates.api.common.entity.BaseDateTimeEntity;
 import kr.co.petmates.api.enums.Role;
 import lombok.AllArgsConstructor;
@@ -78,6 +79,24 @@ public class Members extends BaseDateTimeEntity implements Serializable {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    public static Members toMembersEntity(MembersDTO membersDTO) { // dto -> entity
+        Members member = new Members();
+        member.setKakaoId(membersDTO.getKakaoId());
+        member.setEmail(membersDTO.getEmail());
+        member.setNickname(membersDTO.getNickname());
+        member.setProfileImage(membersDTO.getProfileImage());
+        member.setPhone(membersDTO.getPhone());
+        member.setZipcode(membersDTO.getZipcode());
+        member.setFullAddr(membersDTO.getFullAddr());
+        member.setRoadAddr(membersDTO.getRoadAddr());
+        member.setDetailAddr(membersDTO.getDetailAddr());
+        member.setRole(membersDTO.getRole());
+        member.setLongitude(membersDTO.getLongitude());
+        member.setLatitude(membersDTO.getLatitude());
+        member.setIsWithdrawn(membersDTO.getIsWithdrawn());
+        return member;
+    }
 
 //    @OneToOne(mappedBy = "members", fetch = FetchType.LAZY)
 //    private Petsitter petsitter;

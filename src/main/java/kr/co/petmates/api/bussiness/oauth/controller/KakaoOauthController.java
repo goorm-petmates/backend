@@ -59,7 +59,7 @@ public class KakaoOauthController {
         logger.info("컨테이너 사용자정보: {}", userInfo);
 
         // 클라이언트에 전달할 isNewUser 생성, 사용자정보 데이터베이스 저장, jwt토큰과 리프레시 토큰 생성 및 저장
-        UserService.AuthResult authResult = userService.createUserResult(userInfo, response);
+        UserService.AuthResult authResult = userService.createUserResult(userInfo, response, session);
 
         // isNewUser 정보는 응답 본문에 포함
         Map<String, Object> responseBody = new HashMap<>();
