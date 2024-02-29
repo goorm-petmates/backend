@@ -1,16 +1,12 @@
 package kr.co.petmates.api.bussiness.petsitter.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import kr.co.petmates.api.bussiness.members.entity.Members;
 import kr.co.petmates.api.bussiness.members.repository.MembersRepository;
-import kr.co.petmates.api.bussiness.pet.entity.Pet;
 import kr.co.petmates.api.bussiness.petsitter.dto.PetsitterDto;
-//import kr.co.petmates.api.bussiness.petsitter.dto.PetsitterListDto;
 import kr.co.petmates.api.bussiness.petsitter.dto.PetsitterDto.PetsitterProjection;
 import kr.co.petmates.api.bussiness.petsitter.entity.Petsitter;
 import kr.co.petmates.api.bussiness.petsitter.repository.PetsitterPostRepository;
@@ -127,7 +123,9 @@ public class PetsitterPostService {
             // 현재 로그인한 회원 정보를 가져와서 Petsitter 엔티티에 저장
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String email = authentication.getName();
-            Members members = membersRepository.findByEmail(email);
+//            Members members = membersRepository.findByEmail(email);
+            Optional<Members> membersOptional = membersRepository.findByEmail(email);
+            Members members = membersOptional.orElseThrow(() -> new RuntimeException("회원 정보를 찾을 수 없습니다."));
 
             Petsitter petsitter = new Petsitter();
             petsitter.setTitle(title);
