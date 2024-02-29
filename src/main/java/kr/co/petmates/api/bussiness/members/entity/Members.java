@@ -4,13 +4,17 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import kr.co.petmates.api.bussiness.members.dto.MembersDTO;
+import kr.co.petmates.api.bussiness.petsitter.entity.Petsitter;
 import kr.co.petmates.api.common.entity.BaseDateTimeEntity;
 import kr.co.petmates.api.enums.Role;
 import lombok.AllArgsConstructor;
@@ -97,6 +101,9 @@ public class Members extends BaseDateTimeEntity implements Serializable {
         member.setIsWithdrawn(membersDTO.getIsWithdrawn());
         return member;
     }
+
+    @OneToMany(mappedBy = "members", fetch = FetchType.LAZY)
+    private List<Petsitter> petsitter;      // 펫시터
 
 //    @OneToOne(mappedBy = "members", fetch = FetchType.LAZY)
 //    private Petsitter petsitter;
