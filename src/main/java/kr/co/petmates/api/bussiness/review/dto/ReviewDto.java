@@ -26,6 +26,7 @@ public class ReviewDto {
     public static ReviewDto toReviewDto(Review review) { // entity -> dto
         ReviewDto reviewDto = new ReviewDto();
 
+        reviewDto.setId(review.getId());
         reviewDto.setRating(review.getRating());
         reviewDto.setContents(review.getContents());
 

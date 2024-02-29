@@ -23,4 +23,12 @@ public class BaseDateTimeEntity {
     @LastModifiedDate
     @Column(name ="mod_at")
     private LocalDateTime modAt; // 정보 수정일
+
+    // @CreatedDate
+    // @Column(name = "create_at", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    // private LocalDateTime createDate; // 등록일
+
+    // @LastModifiedDate
+    // @Column(name ="mod_at")
+    // private LocalDateTime modDate; // 정보 수정일
 }
