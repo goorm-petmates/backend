@@ -105,6 +105,10 @@ public class Members extends BaseDateTimeEntity implements Serializable {
     @OneToMany(mappedBy = "members", fetch = FetchType.LAZY)
     private List<Petsitter> petsitter;      // 펫시터
 
+//    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
+//    private List<Pet> pets;
+
+
 //    @OneToOne(mappedBy = "members", fetch = FetchType.LAZY)
 //    private Petsitter petsitter;
 //
