@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +31,35 @@ public class TokenUpdateController {
     private JwtTokenProvider jwtTokenProvider;
     @Autowired
     private JwtTokenSaveService jwtTokenSaveService;
+
+    @GetMapping("/check")   // Jwt 토큰 갱신 요청
+    public ResponseEntity<?> tokenCheck(HttpServletRequest request) {
+        String jwtToken = null;
+        Boolean isValidateToken = null;
+        logger.info("토큰체크 초기 변수 jwtToken: {}", jwtToken);
+
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("jwtToken".equals(cookie.getName())) {
+                    jwtToken = cookie.getValue();
+                    logger.info("토큰체크 쿠키에서 찾은 jwtToken: {}", jwtToken);
+                    isValidateToken = jwtTokenProvider.validateToken(jwtToken);
+                    logger.info("토큰체크 jwtToken 유효성: {}", isValidateToken);
+                    break;
+                }
+            }
+        }
+        if (isValidateToken) {
+            Map<String, String> responseBody = new HashMap<>();
+            responseBody.put("result", "success");
+            return ResponseEntity.ok(responseBody);
+        } else {
+            Map<String, String> responseBody = new HashMap<>();
+            responseBody.put("result", "failed");
+            return ResponseEntity.ok(responseBody);
+        }
+    }
 
     @PostMapping("/update")   // Jwt 토큰 갱신 요청
     public ResponseEntity<?> tokenUpdate(HttpServletResponse response, HttpServletRequest request) {
