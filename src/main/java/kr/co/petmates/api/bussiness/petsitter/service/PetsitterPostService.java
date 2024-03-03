@@ -2,6 +2,7 @@ package kr.co.petmates.api.bussiness.petsitter.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.List;
 import java.util.Optional;
@@ -151,6 +152,19 @@ public class PetsitterPostService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("지원하기에 실패했습니다.", e);
+        }
+    }
+
+    // 끌어올리기 기능
+    public void promotePosting(Long postId) {
+        Optional<Petsitter> optionalPetsitter = petsitterPostRepository.findById(postId);
+        if (optionalPetsitter.isPresent()) {
+            Petsitter petsitter = optionalPetsitter.get();
+            // 끌어올리기 기능 구현
+            petsitter.setOrderByDate(LocalDateTime.now());
+            petsitterPostRepository.save(petsitter);
+        } else {
+            throw new RuntimeException("Posting not found with id: " + postId);
         }
     }
 //

@@ -2,9 +2,15 @@ package kr.co.petmates.api.bussiness.pet.controller;
 
 
 import jakarta.validation.Valid;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import kr.co.petmates.api.bussiness.pet.dto.PetDto;
 import kr.co.petmates.api.bussiness.pet.service.PetService;
+import kr.co.petmates.api.bussiness.petsitter.dto.PetsitterDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,13 +21,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/my-page")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class PetController {
     private final PetService petService;
 
     // 펫 정보 입력 및 유효성 검증
-    @PostMapping("/pet/add")
+    @PostMapping("/my-page/pet/add")
     public ResponseEntity<?> add(@Valid @RequestBody PetDto petDto, BindingResult bindingResult) {
 
         // petDto를 Service로 전달
@@ -29,13 +35,38 @@ public class PetController {
     }
 
     // 펫 정보 조회
-    @GetMapping("/petsitter/{petId}")
+    @GetMapping("/my-page/petsitter/{petId}")
     public ResponseEntity<?> getPet(@PathVariable("petId") Long petId) {
         try {
             PetDto petDto = petService.findPetById(petId);
             return ResponseEntity.ok(petDto);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/petsitter/select-pet")
+    public ResponseEntity<?> selectPet(Long memberId) {
+        try {
+            PetDto pet = petService.findPetByMembersId(memberId);
+            if (pet != null) {
+                Map<String, Object> sucessRes = new HashMap<>();
+                sucessRes.put("result", "success");
+                sucessRes.put("data", pet);
+
+                return ResponseEntity.ok(sucessRes);
+            } else {
+                Map<String, Object> errorRes = new HashMap<>();
+                errorRes.put("result", "fail");
+                errorRes.put("data", Collections.singletonMap("reason", "게시글이 존재하지 않습니다."));
+
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorRes);
+            }
+        } catch (Exception e) {
+            Map<String, Object> errorRes = new HashMap<>();
+            errorRes.put("result", "fail");
+            errorRes.put("data", Collections.singletonMap("reason", "에러가 발생했습니다."));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorRes);
         }
     }
 }

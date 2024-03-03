@@ -2,6 +2,7 @@ package kr.co.petmates.api.bussiness.pet.service;
 
 import static kr.co.petmates.api.bussiness.pet.entity.Pet.toPetEntity;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import kr.co.petmates.api.bussiness.pet.dto.PetDto;
 import kr.co.petmates.api.bussiness.pet.entity.Pet;
@@ -62,6 +63,12 @@ public class PetService {
             }
             return petDto;
         }).orElseThrow(() -> new RuntimeException(UserInterfaceMsg.ERR_NOT_EXIST_PET.getValue()));
+    }
+
+    public PetDto findPetByMembersId(Long memberId) {
+        List<Pet> pets = petRepository.findByOwnerId(memberId);
+
+        return null;
     }
 }
 
