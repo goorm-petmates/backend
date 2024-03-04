@@ -1,9 +1,15 @@
 package kr.co.petmates.api.bussiness.pet.service;
 
 import static kr.co.petmates.api.bussiness.pet.entity.Pet.toPetEntity;
+
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import kr.co.petmates.api.bussiness.members.entity.Members;
+import kr.co.petmates.api.bussiness.members.service.MembersService;
+import kr.co.petmates.api.bussiness.oauth.config.JwtTokenProvider;
 import kr.co.petmates.api.bussiness.pet.dto.PetDto;
 import kr.co.petmates.api.bussiness.pet.entity.Pet;
 import kr.co.petmates.api.bussiness.pet.repository.PetRepository;
@@ -18,6 +24,8 @@ import org.springframework.validation.FieldError;
 @RequiredArgsConstructor
 public class PetService {
     private final PetRepository petRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final MembersService membersService;
 
 
     // 펫 정보 등록
@@ -64,12 +72,22 @@ public class PetService {
             return petDto;
         }).orElseThrow(() -> new RuntimeException(UserInterfaceMsg.ERR_NOT_EXIST_PET.getValue()));
     }
-
-    public PetDto findPetByMembersId(Long memberId) {
-        List<Pet> pets = petRepository.findByOwnerId(memberId);
-
-        return null;
+    // 반려동물 정보 체크
+    public List<Pet> findPetsByUserEmail(HttpServletRequest request) {
+        // JWT 토큰에서 회원 정보 조회
+        Members member = membersService.getMemberInfoFromJwtToken(request);
+        if (member == null) {
+            // 회원 정보가 없는 경우 빈 리스트 반환
+            return Collections.emptyList();
+        }
+        // 회원 ID를 기반으로 펫 정보 조회
+        return petRepository.findByOwner_Id(member.getId());
     }
+//    public PetDto findPetByMembersId(Long memberId) {
+//        List<Pet> pets = petRepository.findByOwnerId(memberId);
+//
+//        return null;
+//    }
 }
 
 
