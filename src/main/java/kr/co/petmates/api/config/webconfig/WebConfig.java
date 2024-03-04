@@ -10,9 +10,9 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
-                .allowedOrigins("*") // 프론트엔드 서버의 주소
+                .allowedOrigins("http://localhost:3000", "https://petmates.co.kr") // 프론트엔드 서버의 주소
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
-//                .allowCredentials(true) // 인증 허용
+                .allowCredentials(true) // 인증 허용
                 .allowedHeaders("Authorization", "Content-Type", "Refresh-Token"); // 요청 헤더 추가
     }
 }
