@@ -72,7 +72,6 @@ public class PetService {
             return petDto;
         }).orElseThrow(() -> new RuntimeException(UserInterfaceMsg.ERR_NOT_EXIST_PET.getValue()));
     }
-
     // 반려동물 정보 체크
     public List<Pet> findPetsByUserEmail(HttpServletRequest request) {
         // JWT 토큰에서 회원 정보 조회
@@ -84,6 +83,11 @@ public class PetService {
         // 회원 ID를 기반으로 펫 정보 조회
         return petRepository.findByOwner_Id(member.getId());
     }
+//    public PetDto findPetByMembersId(Long memberId) {
+//        List<Pet> pets = petRepository.findByOwnerId(memberId);
+//
+//        return null;
+//    }
 }
 
 

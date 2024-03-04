@@ -107,6 +107,12 @@ public class PetsitterPostController {
         }
     }
 
+    // 펫시터 지원하기 클릭
+//    @GetMapping("/petsitter/apply")
+//    public ResponseEntity<?> clickApply() {
+//
+//    }
+
     // 펫시터 지원하기
     @PostMapping("/petsitter/apply")
     public ResponseEntity<?> applyAsPetsitter(
@@ -129,6 +135,12 @@ public class PetsitterPostController {
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
+    }
+
+    @PostMapping("/petsitter/list/{id}/promote")
+    public ResponseEntity<?> promotePosting(@PathVariable Long id) {
+        petsitterPostService.promotePosting(id);
+        return ResponseEntity.ok("끌어올리기 성공.");
     }
 
 //    @GetMapping("/petsitter/list")
