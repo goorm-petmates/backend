@@ -22,7 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 //@EnableGlobalAuthentication(prePostEnable = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
-//    private final TokenProvider tokenProvider;
+    //    private final TokenProvider tokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 //    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
@@ -51,14 +51,15 @@ public class SecurityConfig {
                 )
 //                .cors(Customizer.withDefaults()) // 기본 CORS 설정 사용
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 커스텀 CORS 설정 적용
-//                .httpBasic(withDefaults()) // login form...?
+//                .httpBasic(withDefaults())
                 .authorizeHttpRequests(auth -> auth
 //                        .requestMatchers("/h2-console/**", "/favicon.ico").permitAll() // H2 콘솔, favicon 접근 허용
                                 .requestMatchers("/favicon.ico").permitAll() // favicon 접근 허용
 //                                .requestMatchers(PathRequest.toH2Console()).permitAll()// favicon.ico 요청 인증 무시
-                                .requestMatchers("/api/kakao/**", "/api/oauth/**", "/api/members/test","/api/my-page/**",
-                                        "/v3/**", "/swagger-ui/**",
+                                .requestMatchers("/api/kakao/**", "/api/oauth/**", "/api/members/join", "/api/members/join/save", "/api/members/join/doublecheck", "/api/members/delete", "/api/members/test","/api/my-page/**",
+                                        "/v3/**", "/swagger-ui/**", "/api/reserve/**",
                                         "/api/members/login").permitAll() // 접근 허용
+                                .requestMatchers("/api/kakao/login").permitAll() // /api/kakao/login에 대한 접근 허용
                                 .requestMatchers("/api/members/my-info", "/api/members/add-image", "/api/members/delete",
                                         "/api/members/logout", "/adm/test",
                                         "/api/ide/**", "/api/chat/**", "/chat/**").authenticated() // 로그인했을 때 접근 허용
@@ -84,11 +85,13 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*")); // 실제 환경에서는 구체적으로 지정
-//        configuration.setAllowedOrigins(Arrays.asList("https://example.com"));
+//        configuration.setAllowedOrigins(Arrays.asList("*")); // 실제 환경에서는 구체적으로 지정
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://petmates.co.kr"));
+//        configuration.setAllowedOrigins(Arrays.asList("https://petmates.co.kr"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
         configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
+        configuration.setAllowCredentials(true); // 쿠키, 인증 등의 정보를 포함한 요청 허용
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
