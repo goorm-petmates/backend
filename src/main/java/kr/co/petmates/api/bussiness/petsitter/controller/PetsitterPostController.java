@@ -137,7 +137,7 @@ public class PetsitterPostController {
         }
     }
 
-    @PostMapping("/petsitter/list/{id}/promote")
+    @PostMapping("/petsitter/list/{id}/bringup")
     public ResponseEntity<?> promotePosting(@PathVariable Long id) {
         petsitterPostService.promotePosting(id);
         return ResponseEntity.ok("끌어올리기 성공.");

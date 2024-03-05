@@ -1,9 +1,15 @@
 package kr.co.petmates.api.bussiness.reserve.entity;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -11,12 +17,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import java.util.HashSet;
 import java.util.Set;
 import kr.co.petmates.api.bussiness.members.entity.Members;
@@ -26,21 +26,23 @@ import kr.co.petmates.api.common.entity.BaseDateTimeEntity;
 import kr.co.petmates.api.enums.BookingStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
 
-@Entity
-@Table(name = "BOOKING")
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @DynamicUpdate
 @Getter
 @Setter
 @ToString
+@EqualsAndHashCode(of = "id")
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "BOOKING")
+@Entity
 public class Booking extends BaseDateTimeEntity implements Serializable {
 
     @Id
@@ -59,10 +61,10 @@ public class Booking extends BaseDateTimeEntity implements Serializable {
     @Column(name = "end_time", nullable = false)
     private LocalTime endTime; // 종료 시간
 
-    @Column(nullable = false)
+    @Column(precision = 15, scale = 5, nullable = false)
     private BigDecimal fee; // 수수료
 
-    @Column(name = "total_price", nullable = false)
+    @Column(name = "total_price", precision = 15, scale = 5, nullable = false)
     private BigDecimal totalPrice; // 수수료 포함 총 금액
 
     @Enumerated(EnumType.STRING)
@@ -87,3 +89,5 @@ public class Booking extends BaseDateTimeEntity implements Serializable {
     @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
     private CanceledBooking canceledBooking;
 }
+
+
