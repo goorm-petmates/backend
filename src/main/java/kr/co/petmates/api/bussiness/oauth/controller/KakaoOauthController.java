@@ -1,20 +1,16 @@
 
 package kr.co.petmates.api.bussiness.oauth.controller;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import kr.co.petmates.api.bussiness.members.entity.Members;
-import kr.co.petmates.api.bussiness.members.repository.MembersRepository;
 import kr.co.petmates.api.bussiness.oauth.client.KakaoApiClient;
-import kr.co.petmates.api.bussiness.oauth.config.JwtTokenProvider;
 import kr.co.petmates.api.bussiness.oauth.dto.KakaoUserInfoResponse;
 import kr.co.petmates.api.bussiness.oauth.service.AccessTokenStorage;
+import kr.co.petmates.api.bussiness.oauth.service.JwtTokenCheckService;
 import kr.co.petmates.api.bussiness.oauth.service.JwtTokenSaveService;
 import kr.co.petmates.api.bussiness.oauth.service.KakaoOauthService;
 import kr.co.petmates.api.bussiness.oauth.service.UserService;
@@ -39,11 +35,10 @@ public class KakaoOauthController {
     private final AccessTokenStorage accessTokenStorage;
     private final UserService userService;
     private final JwtTokenSaveService jwtTokenSaveService;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final MembersRepository membersRepository;
+    private final JwtTokenCheckService jwtTokenCheckService;
 
     @PostMapping("/login")   // 로그인 요청
-    public ResponseEntity<?> kakaoLogin(HttpServletResponse response, HttpSession session, @RequestBody Map<String, String> requestBody) {
+    public ResponseEntity<?> kakaoLogin(HttpSession session, @RequestBody Map<String, String> requestBody) {
         // 인가코드 추출
         String code = requestBody.get("code");
         if (code == null) {
@@ -59,45 +54,45 @@ public class KakaoOauthController {
         logger.info("컨테이너 사용자정보: {}", userInfo);
 
         // 클라이언트에 전달할 isNewUser 생성, 사용자정보 데이터베이스 저장, jwt토큰과 리프레시 토큰 생성 및 저장
-        UserService.AuthResult authResult = userService.createUserResult(userInfo, response, session);
-
+//        UserService.AuthResult authResult = userService.createUserResult(userInfo, response, session);
+        boolean isNewUser = userService.createUserResult(userInfo, session);
         // isNewUser 정보는 응답 본문에 포함
         Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("isNewUser", authResult.isNewUser());
-        logger.info("컨테이너 isNewUser: {}", authResult.isNewUser());
+        responseBody.put("isNewUser", isNewUser);
+        logger.info("컨테이너 isNewUser: {}", isNewUser);
         return ResponseEntity.ok(responseBody);
     }
 
     // 쿠키에 jwtToken 저장여부 판단 -> 로그인/로그아웃 체크
     @GetMapping("/login/status")
     public ResponseEntity<?> checkAuthStatus(HttpServletRequest request) {
-        boolean isLoggedIn = checkLoginStatus(request);
+        boolean isLoggedIn = jwtTokenCheckService.checkLoginStatus(request);
         logger.info("컨테이너 로그인 상태 체크 isLoggedIn: {}", isLoggedIn);
 
         return ResponseEntity.ok().body(Collections.singletonMap("isLoggedIn", isLoggedIn));
     }
-    private boolean checkLoginStatus(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {    // "jwtToken" 쿠키를 찾아 값이 비어있지 않은지 확인
-                if ("jwtToken".equals(cookie.getName()) && cookie.getValue() != null && !cookie.getValue().isEmpty()) {
-                    logger.info("컨테이너 쿠키 JwtToken 있음");
-                    String jwtToken = cookie.getValue();
-                    String email = jwtTokenProvider.getEmail(jwtToken);
-                    Optional<Members> memberOptional = membersRepository.findByEmail(email);
-                    if (memberOptional.isPresent()) {
-                        Members member = memberOptional.get();
-                        boolean isNewUser = (member.getPhone() != null);
-                        logger.info("컨테이너 로그인 상태 isNewUser: {}", isNewUser);
-                        // phone 데이터가 null이면 어떤 경우라도 true 반환
-                        return member.getPhone() != null;
-                    }
-                }
-            }
-        }
-        logger.info("컨테이너 쿠키 JwtToken 없음");
-        return false;
-    }
+//    private boolean checkLoginStatus(HttpServletRequest request) {
+//        Cookie[] cookies = request.getCookies();
+//        if (cookies != null) {
+//            for (Cookie cookie : cookies) {    // "jwtToken" 쿠키를 찾아 값이 비어있지 않은지 확인
+//                if ("jwtToken".equals(cookie.getName()) && cookie.getValue() != null && !cookie.getValue().isEmpty()) {
+//                    logger.info("컨테이너 쿠키 JwtToken 있음");
+//                    String jwtToken = cookie.getValue();
+//                    String email = jwtTokenProvider.getEmail(jwtToken);
+//                    Optional<Members> memberOptional = membersRepository.findByEmail(email);
+//                    if (memberOptional.isPresent()) {
+//                        Members member = memberOptional.get();
+//                        boolean isNewUser = (member.getPhone() != null);
+//                        logger.info("컨테이너 로그인 상태 isNewUser: {}", isNewUser);
+//                        // phone 데이터가 null이면 어떤 경우라도 true 반환
+//                        return member.getPhone() != null;
+//                    }
+//                }
+//            }
+//        }
+//        logger.info("컨테이너 쿠키 JwtToken 없음");
+//        return false;
+//    }
 
     // 로그아웃 요청
     @PostMapping("/logout")
