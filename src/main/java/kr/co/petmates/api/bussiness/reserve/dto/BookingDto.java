@@ -3,9 +3,8 @@ package kr.co.petmates.api.bussiness.reserve.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.stream.Collectors;
-import kr.co.petmates.api.bussiness.pet.entity.BookedPet;
+import kr.co.petmates.api.bussiness.members.entity.Members;
+import kr.co.petmates.api.bussiness.petsitter.entity.Petsitter;
 import kr.co.petmates.api.bussiness.reserve.entity.Booking;
 import kr.co.petmates.api.enums.BookingStatus;
 import lombok.AllArgsConstructor;
@@ -58,5 +57,21 @@ public class BookingDto {
         bookingDto.setMembersId(booking.getMembers().getId());
 
         return bookingDto;
+    }
+
+    public Booking toEntity(Members members, Petsitter petsitter) {
+        return Booking.builder()
+                .id(id)
+                .startDate(startDate)
+                .endDate(endDate)
+                .startTime(startTime)
+                .endTime(endTime)
+                .fee(fee)
+                .totalPrice(totalPrice)
+                .status(status)
+                .members(members)
+                .petsitter(petsitter)
+//                .bookedPet(bookedPet)
+                .build();
     }
 }

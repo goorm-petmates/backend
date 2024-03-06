@@ -13,6 +13,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -64,6 +66,22 @@ public class BookingController {
 
                     return responseMap;
                 });
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/apply")
+    public ResponseEntity<?> bookingApply(@RequestBody BookingDto bookingDto) {
+        Map<String, Object> responseMap = bookingService.save(bookingDto);
+        Map<String, Object> response = new HashMap<>();
+        if ((Long) responseMap.get("bookId") > 1L) {
+            response.put("result", "success");
+            response.put("data", responseMap);
+        } else {
+            response.put("result", "failed");
+            response.put("data", Map.of("reason", "BOOK_")); // @Todo: 처리에 따른 상태코드 업데이트
+        }
+
+
         return ResponseEntity.ok(response);
     }
 }
