@@ -38,7 +38,7 @@ public class KakaoOauthController {
     private final JwtTokenCheckService jwtTokenCheckService;
 
     @PostMapping("/login")   // 로그인 요청
-    public ResponseEntity<?> kakaoLogin(HttpSession session, @RequestBody Map<String, String> requestBody) {
+    public ResponseEntity<?> kakaoLogin(HttpServletResponse response, HttpSession session, @RequestBody Map<String, String> requestBody) {
         // 인가코드 추출
         String code = requestBody.get("code");
         if (code == null) {
@@ -55,7 +55,8 @@ public class KakaoOauthController {
 
         // 클라이언트에 전달할 isNewUser 생성, 사용자정보 데이터베이스 저장, jwt토큰과 리프레시 토큰 생성 및 저장
 //        UserService.AuthResult authResult = userService.createUserResult(userInfo, response, session);
-        boolean isNewUser = userService.createUserResult(userInfo, session);
+        boolean isNewUser = userService.createUserResult(response, userInfo, session);
+
         // isNewUser 정보는 응답 본문에 포함
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("isNewUser", isNewUser);

@@ -1,6 +1,7 @@
 // 사용자정보로 데이터베이스 저장, isNewUse 생성, 최종 반환값
 package kr.co.petmates.api.bussiness.oauth.service;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import kr.co.petmates.api.bussiness.oauth.config.JwtTokenProvider;
 import kr.co.petmates.api.bussiness.oauth.controller.KakaoOauthController;
@@ -20,14 +21,19 @@ public class UserService {
     private UserCheckService userCheckService;
     @Autowired
     private JwtTokenSaveService jwtTokenSaveService;
+    @Autowired
+    private JwtTokenCheckService jwtTokenCheckService;
 
     // 카카오서버로부터 전달받은 사용자정보 데이터베이스 저장 / isNewUser, jwtToken, refreshToken 생성 후 반환
-    public boolean createUserResult(KakaoUserInfoResponse userInfo, HttpSession session) {
+    public boolean createUserResult(HttpServletResponse response, KakaoUserInfoResponse userInfo, HttpSession session) {
         String email = userInfo.getEmail(); // 프로필에서 이메일 정보 추출
 //        logger.info("userService email값: {}", email);
 
         // isNewUser 값 반환, 이메일로 데이터베이스 조회
         boolean isNewUser = userCheckService.isNewUser(email);
+        if (!isNewUser) {
+            jwtTokenCheckService.saveJwtToken(response, email);
+        }
 //        logger.info("userService isNewUser값: {}", isNewUser);
 
 //        String jwtToken = jwtTokenProvider.createJwtToken(email);
