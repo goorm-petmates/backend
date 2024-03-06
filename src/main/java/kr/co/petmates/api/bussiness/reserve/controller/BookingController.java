@@ -1,10 +1,14 @@
 package kr.co.petmates.api.bussiness.reserve.controller;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import kr.co.petmates.api.bussiness.reserve.dto.BookingDto;
+import kr.co.petmates.api.bussiness.reserve.dto.RequestCancelBookingDto;
+import kr.co.petmates.api.bussiness.reserve.dto.ResponseCancelBookingDto;
 import kr.co.petmates.api.bussiness.reserve.dto.ResponseFailedDto;
+import kr.co.petmates.api.bussiness.reserve.entity.CanceledBooking;
 import kr.co.petmates.api.bussiness.reserve.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,6 +17,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -65,5 +71,64 @@ public class BookingController {
                     return responseMap;
                 });
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/cancel")
+    public ResponseEntity<?> bookingCancelById(@RequestBody RequestCancelBookingDto requestCancelBookingDto) {
+        try {
+            LocalDateTime canceledTime = getCanceledTimeOrDefault(requestCancelBookingDto);
+            CanceledBooking canceledBooking = bookingService.cancelBooking(
+                    requestCancelBookingDto.getId(), canceledTime);
+
+            return ResponseEntity.ok(createSuccessResponse(canceledBooking, requestCancelBookingDto));
+        } catch (Exception e) {
+            return ResponseEntity.ok(createFailedResponse("ERR_BOOKING_CANCEL_FAILED"));
+
+            // 400 에러...
+//            return ResponseEntity.badRequest().body(createFailedResponse("ERR_BOOKING_CANCEL_FAILED"));
+        }
+    }
+
+    /**
+     * 취소 요청에 취소 시간 값이 없다면 현재 시간값을 반환.
+     * @param requestCancelBookingDto type: RequestCancelBookingDto
+     * @return LocalDateTime.now() or requestCancelBookingDto.getCanceledTime()
+     */
+    private LocalDateTime getCanceledTimeOrDefault(RequestCancelBookingDto requestCancelBookingDto) {
+        return requestCancelBookingDto.getCanceledTime() != null ? requestCancelBookingDto.getCanceledTime()
+                : LocalDateTime.now();
+    }
+
+    /**
+     * 예약 취소 처리 성공에 대한 응답
+     * @param canceledBooking
+     * @param requestCancelBookingDto
+     * @return ResponseCancelBookingDto
+     */
+    private ResponseCancelBookingDto createSuccessResponse(CanceledBooking canceledBooking, RequestCancelBookingDto requestCancelBookingDto) {
+        return ResponseCancelBookingDto.builder()
+                .result("success")
+                .data(ResponseCancelBookingDto.SuccessData.builder()
+                        .id(canceledBooking.getId())
+                        .bookId(canceledBooking.getBooking().getId())
+                        .code(requestCancelBookingDto.getCode())
+                        .canceledTime(canceledBooking.getCanceledTime())
+                        .status(canceledBooking.getBooking().getStatus().getDescription())
+                        .build())
+                .build();
+    }
+
+    /**
+     * 예약 취소 처리 실패에 대한 응답
+     * @param reason type: String
+     * @return ResponseCancelBookingDto
+     */
+    private ResponseCancelBookingDto createFailedResponse(String reason) {
+        return ResponseCancelBookingDto.builder()
+                .result("failed")
+                .data(ResponseCancelBookingDto.FailedData.builder()
+                        .reason(reason)
+                        .build())
+                .build();
     }
 }
