@@ -7,9 +7,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import kr.co.petmates.api.bussiness.members.entity.Members;
 import kr.co.petmates.api.bussiness.members.service.MembersService;
 import kr.co.petmates.api.bussiness.oauth.config.JwtTokenProvider;
+import kr.co.petmates.api.bussiness.pet.dto.PetCheckDto;
 import kr.co.petmates.api.bussiness.pet.dto.PetDto;
 import kr.co.petmates.api.bussiness.pet.entity.Pet;
 import kr.co.petmates.api.bussiness.pet.repository.PetRepository;
@@ -73,7 +75,7 @@ public class PetService {
         }).orElseThrow(() -> new RuntimeException(UserInterfaceMsg.ERR_NOT_EXIST_PET.getValue()));
     }
     // 반려동물 정보 체크
-    public List<Pet> findPetsByUserEmail(HttpServletRequest request) {
+    public List<PetCheckDto> findPetsByUserEmail(HttpServletRequest request) {
         // JWT 토큰에서 회원 정보 조회
         Members member = membersService.getMemberInfoFromJwtToken(request);
         if (member == null) {
@@ -81,7 +83,17 @@ public class PetService {
             return Collections.emptyList();
         }
         // 회원 ID를 기반으로 펫 정보 조회
-        return petRepository.findByOwner_Id(member.getId());
+        List<Pet> pets = petRepository.findByOwner_Id(member.getId());
+
+        return pets.stream().map(pet -> {
+            String photoUrl = null;
+            // 해당 Pet의 사진이 있으면 photoUrl 생성
+            if (pet.getPetPhoto() != null) {
+                photoUrl = "/uploads/" + pet.getPetPhoto().getStoredFileName();
+            }
+            // Pet 정보와 photoUrl을 포함한 PetCheckDto 객체 생성하여 반환
+            return new PetCheckDto(pet.getId(), pet.getName(), photoUrl);
+        }).collect(Collectors.toList()); // Stream을 List로 변환하여 반환
     }
 //    public PetDto findPetByMembersId(Long memberId) {
 //        List<Pet> pets = petRepository.findByOwnerId(memberId);
