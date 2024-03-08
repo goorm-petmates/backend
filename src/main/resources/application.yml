@@ -2,8 +2,8 @@
 spring:
   profiles:
     active:
-#      - local
-      - dev
+      - local
+#      - dev
 #      - prod
 
 #  "canceledTime": "2024-03-06T06:54:25" 대신 "canceledTime": "2024-03-06 06:54:25"처럼 처리

@@ -12,6 +12,7 @@ import kr.co.petmates.api.bussiness.members.repository.MembersRepository;
 import kr.co.petmates.api.bussiness.members.service.MembersService;
 import kr.co.petmates.api.bussiness.oauth.client.KakaoApiClient;
 import kr.co.petmates.api.bussiness.oauth.config.JwtTokenProvider;
+import kr.co.petmates.api.bussiness.oauth.service.JwtTokenCheckService;
 import kr.co.petmates.api.bussiness.oauth.service.JwtTokenSaveService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ public class MembersController {
     private final MembersRepository membersRepository;
     private final KakaoApiClient kakaoApiClient;
     private final JwtTokenSaveService jwtTokenSaveService;
+    private final JwtTokenCheckService jwtTokenCheckService;
 
     // 기본 정보 보여주기
     @GetMapping("/join")
@@ -59,7 +61,7 @@ public class MembersController {
     }
 
     @PostMapping("/join/save")
-    public ResponseEntity<?> saveMember(@RequestBody MembersDTO membersDTOFromClient, HttpSession session) {
+    public ResponseEntity<?> saveMember(@RequestBody MembersDTO membersDTOFromClient, HttpSession session, HttpServletResponse response) {
         // 세션에서 임시 저장된 MembersDTO 정보 가져오기
         MembersDTO sessionMembersDTO = (MembersDTO) session.getAttribute("tempUserInfo");
 
@@ -81,6 +83,9 @@ public class MembersController {
         sessionMembersDTO.setLatitude(membersDTOFromClient.getLatitude());
         sessionMembersDTO.setLongitude(membersDTOFromClient.getLongitude());
 
+        // jwt 토큰 쿠키에 저장
+        String email = sessionMembersDTO.getEmail();
+        jwtTokenCheckService.saveJwtToken(response, email);
         // MembersDTO를 Members 엔티티로 변환
         Members member = Members.toMembersEntity(sessionMembersDTO);
         // Members 엔티티 저장
