@@ -25,9 +25,9 @@ public class PetPhotoService {
 
         petPhotoRepository.save(petPhoto); // 변환된 PetPhoto 엔티티를 데이터베이스에 저장
 
-        String fileDownloadUri = "/uploads/" + storedFileName; // 파일 다운로드 URI 생성
+        String photoUrl = "/uploads/" + storedFileName; // 파일 다운로드 URI 생성
 
-        return ResponseEntity.ok().body(fileDownloadUri);
+        return ResponseEntity.ok().body(photoUrl);
     }
 
 }

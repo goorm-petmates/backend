@@ -1,15 +1,21 @@
 package kr.co.petmates.api.bussiness.pet.entity;
 
 import com.nimbusds.openid.connect.sdk.claims.Gender;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 import kr.co.petmates.api.bussiness.members.entity.Members;
 import kr.co.petmates.api.bussiness.pet.dto.PetDto;
 import kr.co.petmates.api.common.entity.BaseDateTimeEntity;
@@ -54,16 +60,16 @@ public class Pet extends BaseDateTimeEntity implements Serializable {
     private Gender sex; // 성별
 
     @Column(nullable = false)
-    private boolean isNeutering; // 중성화
+    private Boolean isNeutering; // 중성화
 
     @Column(nullable = false)
-    private boolean isAllergy; // 알러지
+    private Boolean isAllergy; // 알러지
 
     @Column(nullable = false)
-    private boolean isDisease; // 질병
+    private Boolean isDisease; // 질병
 
-    @Column(columnDefinition="LONGTEXT")
-    private String ect; // 참고사항
+    @Column(columnDefinition = "LONGTEXT")
+    private String etc; // 참고사항
 
     public static Pet toPetEntity(PetDto petDto) { // dto -> entity
         Pet pet = new Pet();
@@ -72,7 +78,7 @@ public class Pet extends BaseDateTimeEntity implements Serializable {
         pet.setBirthYear(petDto.getBirthYear());
         pet.setWeight(petDto.getWeight());
         pet.setSex(petDto.getSex());
-        pet.setEct(petDto.getEct());
+        pet.setEtc(petDto.getEtc());
         return pet;
     }
 
@@ -84,11 +90,17 @@ public class Pet extends BaseDateTimeEntity implements Serializable {
     @Getter
     @ManyToOne
     @JoinColumn(name = "members_id")
-
     private Members owner;
-
     public void setOwner(Members owner) {
         this.owner = owner;
     }
+
+    // 펫과 '펫 사진' 연결 (양방향)
+    @OneToOne(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true)
+    private PetPhoto petPhoto;
+
+    // 펫과 '예약된 펫' 연결
+    @OneToMany(mappedBy = "pet", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<BookedPet> bookedPet = new HashSet<>();
 }
 
