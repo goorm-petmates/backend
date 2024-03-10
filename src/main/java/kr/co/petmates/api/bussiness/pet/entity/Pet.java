@@ -1,6 +1,5 @@
 package kr.co.petmates.api.bussiness.pet.entity;
 
-import com.nimbusds.openid.connect.sdk.claims.Gender;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -57,7 +56,7 @@ public class Pet extends BaseDateTimeEntity implements Serializable {
     private String weight; // 몸무게
 
     @Column(nullable = false)
-    private Gender sex; // 성별
+    private String sex; // 성별
 
     @Column(nullable = false)
     private Boolean isNeutering; // 중성화
@@ -71,6 +70,9 @@ public class Pet extends BaseDateTimeEntity implements Serializable {
     @Column(columnDefinition = "LONGTEXT")
     private String etc; // 참고사항
 
+    @Column
+    private Boolean isDeleted = false;
+
     public static Pet toPetEntity(PetDto petDto) { // dto -> entity
         Pet pet = new Pet();
         pet.setName(petDto.getName());
@@ -79,6 +81,12 @@ public class Pet extends BaseDateTimeEntity implements Serializable {
         pet.setWeight(petDto.getWeight());
         pet.setSex(petDto.getSex());
         pet.setEtc(petDto.getEtc());
+
+        pet.setIsNeutering(petDto.getIsNeutering());
+        pet.setIsAllergy(petDto.getIsAllergy());
+        pet.setIsDisease(petDto.getIsDisease());
+        pet.setIsDeleted(petDto.getIsDeleted() != null && petDto.getIsDeleted());
+
         return pet;
     }
 
