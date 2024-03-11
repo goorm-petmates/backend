@@ -70,7 +70,8 @@ public class Pet extends BaseDateTimeEntity implements Serializable {
     @Column(columnDefinition = "LONGTEXT")
     private String etc; // 참고사항
 
-    @Column
+    // 삭제여부
+    @Column(nullable = false)
     private Boolean isDeleted = false;
 
     public static Pet toPetEntity(PetDto petDto) { // dto -> entity
