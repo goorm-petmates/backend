@@ -1,6 +1,5 @@
 package kr.co.petmates.api.bussiness.pet.dto;
 
-import com.nimbusds.openid.connect.sdk.claims.Gender;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import kr.co.petmates.api.bussiness.pet.entity.Pet;
@@ -36,17 +35,19 @@ public class PetDto {
     @Pattern(regexp = "^[0-9]{1,2}$|^(100)$\n")
     private String weight; // 몸무게
 
-    private Gender sex; // 성별
+    private String sex; // 성별
 
-    private boolean isNeutering; // 중성화
+    private Boolean isNeutering; // 중성화
 
-    private boolean isAllergy; // 알러지
+    private Boolean isAllergy; // 알러지
 
-    private boolean isDisease; // 질병
+    private Boolean isDisease; // 질병
 
     private String etc; // 참고사항
 
     private String photoUrl; // 사진 접근을 위한 URL
+
+    private Boolean isDeleted;
 
 
     public static PetDto toPetDto(Pet pet) { // entity -> dto
@@ -57,6 +58,11 @@ public class PetDto {
         petDto.setWeight(pet.getWeight());
         petDto.setSex(pet.getSex());
         petDto.setEtc(pet.getEtc());
+
+        petDto.setIsNeutering(pet.getIsNeutering());
+        petDto.setIsAllergy(pet.getIsAllergy());
+        petDto.setIsDisease(pet.getIsDisease());
+        petDto.setIsDeleted(pet.getIsDeleted());
 
         return petDto;
     }
