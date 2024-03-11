@@ -13,17 +13,20 @@ import kr.co.petmates.api.bussiness.members.service.MembersService;
 import kr.co.petmates.api.bussiness.oauth.config.JwtTokenProvider;
 import kr.co.petmates.api.bussiness.pet.dto.PetCheckDto;
 import kr.co.petmates.api.bussiness.pet.dto.PetDto;
+import kr.co.petmates.api.bussiness.pet.dto.PetResponseDto;
 import kr.co.petmates.api.bussiness.pet.entity.Pet;
 import kr.co.petmates.api.bussiness.pet.repository.PetRepository;
 import kr.co.petmates.api.enums.UserInterfaceMsg;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
-@Service
+@Transactional
 @RequiredArgsConstructor
+@Service
 public class PetService {
     private final PetRepository petRepository;
     private final JwtTokenProvider jwtTokenProvider;
@@ -63,6 +66,7 @@ public class PetService {
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
+    @Transactional(readOnly = true)
     // 펫 정보 및 사진 조회
     public PetDto findPetById(Long petId) {
         return petRepository.findById(petId).map(pet -> {
@@ -74,6 +78,8 @@ public class PetService {
             return petDto;
         }).orElseThrow(() -> new RuntimeException(UserInterfaceMsg.ERR_NOT_EXIST_PET.getValue()));
     }
+
+    @Transactional(readOnly = true)
     // 반려동물 정보 체크
     public List<PetCheckDto> findPetsByUserEmail(HttpServletRequest request) {
         // JWT 토큰에서 회원 정보 조회
@@ -100,6 +106,37 @@ public class PetService {
 //
 //        return null;
 //    }
+
+
+    @Transactional(readOnly = true)
+    public List<PetResponseDto> findPetsByOwnerId(Long ownerId) {
+        List<PetResponseDto> pets = petRepository.findByMembersId(ownerId);
+        if (pets.isEmpty()) {
+            throw new RuntimeException("ERR_NOT_EXIST_PET");
+        }
+        return pets;
+    }
+
+    private PetDto toDto(Pet pet) {
+        PetDto petDto = PetDto.builder()
+                .id(pet.getId())
+                .name(pet.getName())
+                .breed(pet.getBreed())
+//                .sex(pet.getSex())
+                .birthYear(pet.getBirthYear())
+                .weight(pet.getWeight())
+                .isNeutering(pet.getIsNeutering())
+                .isAllergy(pet.getIsAllergy())
+                .isDisease(pet.getIsDisease())
+                .etc(pet.getEtc())
+                .build();
+
+        if (pet.getPetPhoto() != null) {
+            petDto.setPhotoUrl("/uploads/" + pet.getPetPhoto().getStoredFileName());
+        }
+
+        return petDto;
+    }
 }
 
 

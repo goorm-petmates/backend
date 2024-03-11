@@ -2,7 +2,10 @@ package kr.co.petmates.api.bussiness.pet.controller;
 
 
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Map;
 import kr.co.petmates.api.bussiness.pet.dto.PetDto;
+import kr.co.petmates.api.bussiness.pet.dto.PetResponseDto;
 import kr.co.petmates.api.bussiness.pet.service.PetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -63,4 +66,18 @@ public class PetController {
 //            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorRes);
 //        }
 //    }
+
+    @GetMapping("my-page/pet/{membersId}")
+    public ResponseEntity<?> myPetList(@PathVariable("membersId") Long membersId) {
+        try {
+            List<PetResponseDto> pets = petService.findPetsByOwnerId(membersId);
+            return ResponseEntity.ok(Map.of("result", "success", "data", pets));
+        } catch (RuntimeException e) {
+            return ResponseEntity.ok(Map.of("result", "failed",
+                    "data", Map.of("reason", e.getMessage())));
+            // 400 에러
+//            return ResponseEntity.badRequest().body(Map.of("result", "failed",
+//                    "data", Map.of("reason", e.getMessage())));
+        }
+    }
 }
